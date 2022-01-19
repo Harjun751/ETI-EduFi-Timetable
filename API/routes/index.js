@@ -1,13 +1,44 @@
 var express = require('express');
 var router = express.Router();
+var mysql = require('mysql');
+
+var con = mysql.createConnection({
+	host:"localhost",
+	user:"edufi",
+	password:"password",
+    database:"edufi"
+})
 
 // write logic to get timetable from database from here?
-router.get('/timetable', function(req, res, next) {
-  html = createTable([{"class_id":123,"day":"monday","start":"0900","end":"1200","name":"DL"}])
-  console.log(html)
-  res.render('timetable', { html:html });
+router.get('/timetable/student/:studentID', function(req, res, next) {
+  student_id =  req.params.studentID
+  con.connect(function(err) {
+      if (err) {
+        console.error('error connecting: ' + err.stack);
+        return;
+      }
+    
+      console.log('connected as id ' + con.threadId);
+  });
+  con.query({
+      sql: 'SELECT * from student_class_link WHERE student_id = ?',
+      values: [student_id],
+      function (error, results, fields){
+        unique_classes = [ ...new Set(results.map(x=>x.class_id) ]
+        // GET class details
+        class_details = [{class_id:123, lessons: [{day:"monday","start":0900,"end":1000},{day:"wednesday",start:0900,end:1000}], name: "Deep Learning", short_name:"DL"}]
+        html = createTable(class_details)
+        res.render('timetable', { html:html })
+      }
+  })
 });
 
+router.get('/timetable/tutor/:tutorID', function(req, res, next) {
+    tutor_ID =  req.params.tutorID
+    // get tutor class info
+    // create html 
+    res.send('timetable',{html:html})
+  })
 module.exports = router;
 
 function createTable(class_list){
@@ -30,9 +61,11 @@ function createTable(class_list){
         "friday":[],
     }
     for (i=0; i<class_list.length; i++){
+        for (y=0; y<class_list[i].lessons.length; y++){
+            day_dict[class_list[i].lessons[y].day].push(class_list[i])
+            day_dict[class_list[i].lessons[y].day].sort()
+        }
         console.log(day_dict[class_list[i].day])
-        day_dict[class_list[i].day].push(class_list[i])
-        day_dict[class_list[i].day].sort()
     }
     html = ""
     Object.keys(day_dict).forEach(function(key){

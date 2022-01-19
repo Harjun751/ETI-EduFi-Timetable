@@ -20,6 +20,7 @@ This task is done using a node script
 3. Call Bidding Dashboard API to PATCH the bids with succesful/unsuccessful status
 4. Store successful bids in database with: {'Student_ID':123, 'classes':[123,1231,13]} or similar structure
 5. Call [3.15.3](#3154-auto-refund-failed-bids) with a list of failed bids as the parameter
+6. _Possible requirement: Update class API with enrolled students **OR** provide API for allocated classes_
 
 ### 3.15.3 Generate Timetable
 This task shows a timetable for a given tutor/student
