@@ -7,6 +7,7 @@ CREATE TABLE student(
 
 CREATE TABLE class(
 	id INT PRIMARY KEY
+	module_code VARCHAR(5)
 );
 
 CREATE TABLE semester(

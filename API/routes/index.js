@@ -24,10 +24,11 @@ router.get('/timetable/student/:studentID', function(req, res, next) {
       sql: 'SELECT * from student_class_link WHERE student_id = ?',
       values: [student_id],
       function (error, results, fields){
-        unique_classes = [ ...new Set(results.map(x=>x.class_id) ]
+        unique_classes = [ ...new Set(results.map(x=>x.class_id)) ]
         // GET class details
         class_details = [{class_id:123, lessons: [{day:"monday","start":0900,"end":1000},{day:"wednesday",start:0900,end:1000}], name: "Deep Learning", short_name:"DL"}]
         html = createTable(class_details)
+        con.end();
         res.render('timetable', { html:html })
       }
   })
@@ -39,6 +40,49 @@ router.get('/timetable/tutor/:tutorID', function(req, res, next) {
     // create html 
     res.send('timetable',{html:html})
   })
+
+  router.get('/api/v1/allocations/module/:module_code', function(req, res, next) {
+    module_code =  req.params.module_code
+    con.connect(function(err) {
+        if (err) {
+          console.error('error connecting: ' + err.stack);
+          return;
+        }
+      
+        console.log('connected as id ' + con.threadId);
+    });
+    con.query({
+        sql: 'SELECT student_id,class_id,semester from student_class_link INNER JOIN class ON student_class_link.class_id=class.id WHERE module_code = ? and semester = (SELECT MAX(id)  FROM semester)',
+        values: [[module_code]]
+    },
+    function (error, results, fields){
+        if (error) throw error
+        res.send(results)
+        con.end();
+    });
+});
+
+router.get('/api/v1/allocations/class/:class_id', function(req, res, next) {
+    class_id =  req.params.class_id
+    con.connect(function(err) {
+        if (err) {
+          console.error('error connecting: ' + err.stack);
+          return;
+        }
+      
+        console.log('connected as id ' + con.threadId);
+    });
+    con.query({
+        sql: 'SELECT * from student_class_link WHERE class_id = ? and semester = (SELECT MAX(id)  FROM semester)',
+        values: [class_id]
+    },
+    function (error, results, fields){
+        if (error) throw error
+        res.send(results)
+        con.end();
+    });
+});
+
 module.exports = router;
 
 function createTable(class_list){
