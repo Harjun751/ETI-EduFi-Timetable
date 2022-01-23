@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  timetable-api:
+    image: arjunsingh751/eti-edufi-timetable:version0.5
+    ports:
+      - 3000:3000
+    container_name: "timetable-api"
+    environment:
+      DB_HOST: timetable_db
+  scheduler:
+    image: mcuadros/ofelia:latest
+    volumes:
+      - ./config.ini:/etc/ofelia/config.ini
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  timetable_db:
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    volumes:
+      - type: bind
+        source: "./create_tables.sql"
+        target: /docker-entrypoint-initdb.d/create_tables.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      # MYSQL_USER: edufi
+      # MYSQL_PASSWORD: password
+      MYSQL_DATABASE: edufi
