@@ -11,6 +11,8 @@ This module exposes some endpoints to obtain data from. They are shown below.
 | /api/v1/timetable/student/:student_id     | GET       | Obtains the timetable for particular student                  |
 | /api/v1/timetable/tutor/:tutor_id         | GET       | Obtains the timetable for particular tutor                    |
 
+The API Documentation [is also viewable here](https://documenter.getpostman.com/view/19284028/UVXqFYo2)
+
 ## How does it work?
 This section will go through the planned steps in which the microservice accomplshes it's tasks. It's mostly for my own reference.
 
