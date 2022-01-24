@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   timetable-api:
-    image: arjunsingh751/eti-edufi-timetable:version0.5
+    image: arjunsingh751/eti-edufi-timetable:version0.51
     ports:
       - 3000:3000
     container_name: "timetable-api"
