@@ -22,6 +22,7 @@ jobs:
         run: |
           yarn
           yarn add eslint --dev
+          npm init @eslint/config
 
       - name: Format using ESLint
         run: yarn run eslint . --ext .js, .jsx, .ts, .tsx
