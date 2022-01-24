@@ -21,6 +21,7 @@ jobs:
       - name: Format using ESLint
         run: |
           cd API
+          npm i eslint-config-airbnb
           npx eslint . --fix
       
       - name: Push formatted changes
