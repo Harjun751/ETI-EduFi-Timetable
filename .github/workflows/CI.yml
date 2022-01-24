@@ -28,3 +28,4 @@ jobs:
           eslint: true
           github_token: ${{ secrets.CI_PAT }}
           auto_fix: true
+          eslint_dir: API/
