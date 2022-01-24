@@ -5,6 +5,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var winston = require('winston'),
+expressWinston = require('express-winston');
 
 var indexRouter = require('./routes/index');
 
@@ -20,8 +22,35 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// Enable request logging
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'requests_error.log', level: 'warn' })
+  ],
+  format: winston.format.combine(
+    winston.format.json()
+  ),
+  meta: true, // optional: control whether you want to log the meta data about the request (default to true)
+  msg: "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+  expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+  colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+  ignoreRoute: function (req, res) { return false; }, // optional: allows to skip some log messages based on request and/or response
+  statusLevels: true
+}));
 
 app.use('/', indexRouter);
+
+// error logging
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'pipeline_error.log' })
+  ],
+  format: winston.format.combine(
+    winston.format.json()
+  )
+}));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var mysql = require("mysql");
 
+// TODO: Replace these with envvars
 var con = mysql.createConnection({
   host: process.env.DB_HOST,
   user: "edufi",
@@ -37,9 +38,9 @@ router.get("/api/v1/timetable/student/:studentID", function (req, res, next) {
 
 router.get("/api/v1/timetable/tutor/:tutorID", function (req, res, next) {
   tutor_ID = req.params.tutorID;
-  // get tutor class info
-  // create html
-  res.send("timetable", { html: html });
+  // TODO: Get tutor allocation info from 3.8
+  var html = '';
+  res.render("timetable", { html: html });
 });
 
 router.get(
@@ -78,14 +79,14 @@ module.exports = router;
 function createTable(class_list) {
   col_dict = {
     "0900": 0,
-    1000: 1,
-    1100: 2,
-    1200: 3,
-    1300: 4,
-    1400: 5,
-    1500: 6,
-    1600: 7,
-    1700: 8,
+    "1000": 1,
+    "1100": 2,
+    "1200": 3,
+    "1300": 4,
+    "1400": 5,
+    "1500": 6,
+    "1600": 7,
+    "1700": 8,
   };
   day_dict = {
     monday: [],

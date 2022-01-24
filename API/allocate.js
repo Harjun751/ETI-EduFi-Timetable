@@ -1,6 +1,20 @@
 mysql = require('mysql');
 // import fetch from ('node-fetch');
 
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, label, prettyPrint } = format;
+
+const logger = createLogger({
+    format: combine(
+      timestamp(),
+      prettyPrint()
+    ),
+    transports: [
+      new transports.Console(),
+      new transports.File({ filename: 'allocate.log'})
+    ]
+  });
+
 var con = mysql.createConnection({
 	host:process.env.DB_HOST,
 	user:"edufi",
@@ -13,10 +27,9 @@ async function allocate_classes(){
 	var bid_api_endpoint = "http://localhost:3000"
     var class_api_endpoint = "http://localhost:3000"
     
-    // Assumed data structures of various other APIs
+    // Assumed returned data from bid api & class api
 	var bid_list = [{ student_id:1, bid:1, class_id:321 },  { student_id:5, bid:128, class_id: 123}, {student_id:2, bid:130, class_id:321 }, {student_id:3, bid:130, class_id:321 }, {student_id:12, bid:130, class_id:321 }]
     bid_list.sort((a, b) => parseFloat(b.bid) - parseFloat(a.bid))
-	// var class_list = [{ class_id: 123, capacity: 1, enrolled:0, module_code:"DB" }, { class_id:321, capacity:1, enrolled:0, module_code:"PRG" }]
     var class_list = [{"class_id":123, "lessons": [{"day":"monday","start":"0900","end":"1000"},{"day":"wednesday","start":"0900","end":"1000"}], "module_code":"DL", "capacity": 1, "enrolled":0},
                       {"class_id":321, "lessons": [{"day":"monday","start":"1000","end":"1200"},{"day":"wednesday","start":"1000","end":"1200"}], "module_code":"PRG", "capacity": 3, "enrolled":0}]
 
@@ -31,7 +44,7 @@ async function allocate_classes(){
     });
 
     var failed_bids = []
-    // Refund classes where bid count is less than 3
+    // Add bids where bids < 3 to the failed bids list
     class_list.forEach(y => {
         var to_remove = bid_list.filter(x => x.class_id === y.class_id)
         if (to_remove.length<3){
@@ -44,7 +57,6 @@ async function allocate_classes(){
 
     var student_class_list = []
     var curr_class = null;
-    // Iterate through bid list
     for (let i=0; i < bid_list.length; i++){
         // Get class details from class list
         curr_class = class_list.find(x => x.class_id == bid_list[i].class_id)
@@ -72,7 +84,8 @@ async function allocate_classes(){
     con.query("INSERT INTO semester (start,end) VALUES ('" + sem_start_date_formatted +"', '"+sem_end_date_formatted +"')", insertClass)
 
 
-    // Insert student-class link after semester after student after class
+    // Insert calss data
+    // Update module code if necessary
     function insertClass(error,results, fields){
         if (error) throw error;
         semester_id = results.insertId
@@ -86,6 +99,7 @@ async function allocate_classes(){
         }, insertLessons);
     }
 
+    // Insert lessons
     function insertLessons(error, results, fields){
         var lesson_details = unique_class_ids.map(x => {
             var deets = []
@@ -106,6 +120,7 @@ async function allocate_classes(){
         })
     }
 
+    // insert students
     function insertStudent(error,results,field){
         if (error) throw error;
         var student_formatted = unique_student_ids.map(x=> {
@@ -118,6 +133,7 @@ async function allocate_classes(){
         }, insertLink);
     }
 
+    // Insert the timetable data
     function insertLink(error,results,field){
         if (error) throw error;
         var student_link_details = student_class_list.map(x => {return [x.student_id, x.class_id, semester_id]})
@@ -128,6 +144,8 @@ async function allocate_classes(){
         }, function (error,results,fields){
             if (error) throw error;
             con.end();
+            // Log if all is good
+            logger.log({level:'info',message:'Classes successfully allocated'})
             // Call refund bids function
 	        refund_bids(failed_bids)
         });
