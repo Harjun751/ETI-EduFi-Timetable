@@ -1,8 +1,8 @@
 module.exports = {
-  content: ["../views/*.{liquid,js}"],
+  content: ['../views/*.{liquid,js}'],
   theme: {
-    extend:{},
+    extend: {},
   },
   plugins: [
   ],
-}
+};
