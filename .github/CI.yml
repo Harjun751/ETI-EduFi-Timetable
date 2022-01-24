@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+      branches:
+        - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          repository: Harjun751/ETI-EduFi-Timetable
+          token: ${{ secrets.CI_PAT }}
+
+      - name: Install modules
+        run: yarn
+
+      - name: Format using ESLint
+        run: eslint . --ext .js, .jsx, .ts, .tsx
+      
+      - name: Push formatted changes
+        if: steps.action_black.outputs.is_formatted == 'true'
+        run: |
+            git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git commit -am "Formatted code"
+            git push origin HEAD:${{ github.head_ref }}
