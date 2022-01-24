@@ -18,14 +18,10 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install modules
-        run: |
-          yarn
-          yarn add eslint --dev
-          npm init @eslint/config
-
       - name: Format using ESLint
-        run: yarn run eslint . --ext .js, .jsx, .ts, .tsx
+        run: |
+          cd API
+          npx run eslint . --ext .js, .jsx, .ts, .tsx --fix
       
       - name: Push formatted changes
         if: steps.action_black.outputs.is_formatted == 'true'
