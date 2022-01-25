@@ -4,7 +4,7 @@ services:
   timetable-api:
     image: arjunsingh751/eti-edufi-timetable:version0.51
     ports:
-      - 3000:3000
+      - 9051:3000
     container_name: "timetable-api"
     environment:
       DB_HOST: timetable_db
@@ -23,6 +23,4 @@ services:
         target: /docker-entrypoint-initdb.d/create_tables.sql
     environment:
       MYSQL_ROOT_PASSWORD: secret
-      # MYSQL_USER: edufi
-      # MYSQL_PASSWORD: password
       MYSQL_DATABASE: edufi

@@ -1,10 +1,10 @@
-mysql = require('mysql');
+const mysql = require('mysql');
 // import fetch from ('node-fetch');
 
 const { createLogger, format, transports } = require('winston');
 
 const {
-  combine, timestamp, label, prettyPrint,
+  combine, timestamp, prettyPrint,
 } = format;
 
 const logger = createLogger({
@@ -25,15 +25,22 @@ const con = mysql.createConnection({
   database: 'edufi',
 });
 
-async function allocate_classes() {
+async function allocateClasses() {
   // Get bidding list
-  const bid_api_endpoint = 'http://localhost:3000';
-  const class_api_endpoint = 'http://localhost:3000';
+  // const bidAPIEndpoint = 'http://localhost:3000';
+  // const classAPIEndpoint = 'http://localhost:3000';
 
   // Assumed returned data from bid api & class api
-  let bid_list = [{ student_id: 1, bid: 1, class_id: 321 }, { student_id: 5, bid: 128, class_id: 123 }, { student_id: 2, bid: 130, class_id: 321 }, { student_id: 3, bid: 130, class_id: 321 }, { student_id: 12, bid: 130, class_id: 321 }];
-  bid_list.sort((a, b) => parseFloat(b.bid) - parseFloat(a.bid));
-  const class_list = [{
+  let bidList = [
+    { student_id: 1, bid: 1, class_id: 321 },
+    { student_id: 5, bid: 128, class_id: 123 },
+    { student_id: 2, bid: 130, class_id: 321 },
+    { student_id: 3, bid: 130, class_id: 321 },
+    { student_id: 12, bid: 130, class_id: 321 },
+  ];
+
+  bidList.sort((a, b) => parseFloat(b.bid) - parseFloat(a.bid));
+  const classList = [{
     class_id: 123, lessons: [{ day: 'monday', start: '0900', end: '1000' }, { day: 'wednesday', start: '0900', end: '1000' }], module_code: 'DL', capacity: 1, enrolled: 0,
   },
   {
@@ -42,125 +49,126 @@ async function allocate_classes() {
 
   con.connect((err) => {
     if (err) {
-      console.error(`error connecting: ${err.stack}`);
-      return;
+      logger.crit(`Error connecting to database. ${err.stack}`);
     }
-
-    console.log(`connected as id ${con.threadId}`);
   });
 
-  const failed_bids = [];
+  const failedBids = [];
   // Add bids where bids < 3 to the failed bids list
-  class_list.forEach((y) => {
-    const to_remove = bid_list.filter((x) => x.class_id === y.class_id);
-    if (to_remove.length < 3) {
-      failed_bids.push(...to_remove);
-      bid_list = bid_list.filter((value, index) => to_remove.indexOf(value) == -1);
+  classList.forEach((y) => {
+    const toRemove = bidList.filter((x) => x.class_id === y.class_id);
+    if (toRemove.length < 3) {
+      failedBids.push(...toRemove);
+      bidList = bidList.filter((value) => toRemove.indexOf(value) === -1);
     }
   });
 
-  const student_class_list = [];
-  let curr_class = null;
-  for (let i = 0; i < bid_list.length; i++) {
+  const studentClassList = [];
+  let currClass = null;
+  for (let i = 0; i < bidList.length; i += 1) {
     // Get class details from class list
-    curr_class = class_list.find((x) => x.class_id == bid_list[i].class_id);
-    if (curr_class.enrolled < curr_class.capacity) {
+    currClass = classList.find((x) => x.class_id == bidList[i].class_id);
+    if (currClass.enrolled < currClass.capacity) {
       // Add student to student-class list only if the enrolled value  is OK
-      student_class_list.push({ student_id: bid_list[i].student_id, class_id: curr_class.class_id });
-      curr_class.enrolled += 1;
+      studentClassList.push({ student_id: bidList[i].student_id, class_id: currClass.class_id });
+      currClass.enrolled += 1;
     } else {
       // push failed bid with bid amnt to another list
-      failed_bids.push({ student_id: bid_list[i].student_id, bid_amount: bid_list[i].bid });
+      failedBids.push({ student_id: bidList[i].student_id, bid_amount: bidList[i].bid });
     }
   }
 
-  const unique_class_ids = [...new Set(student_class_list.map((x) => x.class_id))];
-  const unique_student_ids = [...new Set(student_class_list.map((x) => x.student_id))];
+  const uniqueClassIDs = [...new Set(studentClassList.map((x) => x.class_id))];
+  const uniqueStudentIDs = [...new Set(studentClassList.map((x) => x.student_id))];
 
   // Create semester
   const today = new Date();
-  const sem_start_date_formatted = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+  const formattedSemStartDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
   // Set end date to a week from start
   today.setDate(today.getDate() + 7);
-  const sem_end_date_formatted = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-  let semester_id = -1;
-  con.query(`INSERT INTO semester (start,end) VALUES ('${sem_start_date_formatted}', '${sem_end_date_formatted}')`, insertClass);
+  const formattedSemEndDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+  let semesterID = -1;
+  con.query(`INSERT INTO semester (start,end) VALUES ('${formattedSemStartDate}', '${formattedSemEndDate}')`, insertClass);
 
   // Insert calss data
   // Update module code if necessary
-  function insertClass(error, results, fields) {
+  function insertClass(error, results) {
     if (error) throw error;
-    semester_id = results.insertId;
-    const unique_class_details = unique_class_ids.map((x) => {
-      const { module_code } = class_list.find((y) => y.class_id == x);
-      return [x, module_code];
+    semesterID = results.insertId;
+    const uniqueClassDetails = uniqueClassIDs.map((x) => {
+      const { moduleCode } = classList.find((y) => y.class_id === x);
+      return [x, moduleCode];
     });
     con.query({
       sql: 'INSERT INTO class VALUES ? ON DUPLICATE KEY UPDATE module_code=VALUES(module_code);',
-      values: [unique_class_details],
+      values: [uniqueClassDetails],
     }, insertLessons);
   }
 
   // Insert lessons
-  function insertLessons(error, results, fields) {
-    const lesson_details = unique_class_ids.map((x) => {
+  function insertLessons() {
+    const lessonDetails = uniqueClassIDs.map((x) => {
       const deets = [];
-      const this_class = class_list.find((y) => y.class_id = x);
-      this_class.lessons.forEach((lesson) => { deets.push([x, lesson.start, lesson.end, lesson.day]); });
+      const thisClass = classList.find((y) => y.class_id === x);
+      thisClass.lessons.forEach((lesson) => {
+        deets.push([x, lesson.start, lesson.end, lesson.day]);
+      });
       return deets;
     });
     con.query({
       // pretend this is fine
       // TODO: refine data structure
       sql: 'DELETE FROM lesson',
-    }, (error, results, field) => {
+    }, () => {
       con.query({
         sql: 'INSERT INTO lesson (class_id,start,end,day) VALUES ?',
-        values: lesson_details,
+        values: lessonDetails,
       }, insertStudent);
     });
   }
 
   // insert students
-  function insertStudent(error, results, field) {
+  function insertStudent(error) {
     if (error) throw error;
-    const student_formatted = unique_student_ids.map((x) => [x]);
+    const formattedStudentID = uniqueStudentIDs.map((x) => [x]);
     // Create students
     con.query({
       sql: 'INSERT IGNORE INTO student VALUES ?',
-      values: [student_formatted],
+      values: [formattedStudentID],
     }, insertLink);
   }
 
   // Insert the timetable data
-  function insertLink(error, results, field) {
+  function insertLink(error) {
     if (error) throw error;
-    const student_link_details = student_class_list.map((x) => [x.student_id, x.class_id, semester_id]);
+    const studentLinkDetails = studentClassList.map(
+      (x) => [x.student_id, x.class_id, semesterID],
+    );
     // Create student-class linkage
     con.query({
       sql: 'INSERT INTO student_class_link VALUES ?',
-      values: [student_link_details],
-    }, (error, results, fields) => {
+      values: [studentLinkDetails],
+    }, (error) => {
       if (error) throw error;
       con.end();
       // Log if all is good
       logger.log({ level: 'info', message: 'Classes successfully allocated' });
       // Call refund bids function
-	        refund_bids(failed_bids);
+      refundBids(failedBids);
     });
   }
 }
 
-async function refund_bids(failed_bids) {
+async function refundBids(failedBids) {
   // TOWRITE: Call wallet credit API for refunds
   console.log('refunded!');
 
-  // for (let i = 0; i < failed_bids.length; i++){
+  // for (let i = 0; i < failedBids.length; i++){
   //     await fetch(credit_api_endpoint, {
   //         method:'POST',
-  //         body: JSON.stringify({ credits : failed_bids[i].bid_amount, student : student_data["student_id"] })
+  //         body: JSON.stringify({ credits : failedBids[i].bid_amount, student : student_data["student_id"] })
   //     })
   // }
 }
 
-allocate_classes();
+allocateClasses();
