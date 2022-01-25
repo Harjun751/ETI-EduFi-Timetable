@@ -16,7 +16,7 @@ services:
   timetable_db:
     image: mysql:latest
     ports:
-      - 3306:3306
+      - 9052:3306
     volumes:
       - type: bind
         source: "./create_tables.sql"
