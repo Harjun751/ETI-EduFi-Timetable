@@ -27,7 +27,7 @@ const con = mysql.createConnection({
 
 async function allocateClasses() {
   // TODO: Check server time and docker scheduler
-  let nextMonday = new Date();
+  const nextMonday = new Date();
   while (nextMonday.getDay() !== 1) {
     nextMonday.setDate(nextMonday.getDate() + 1);
   }
@@ -39,12 +39,22 @@ async function allocateClasses() {
   const classAPIEndpoint = 'http://localhost:3000';
 
   // Assumed returned data from bid api & class api
-  let bidList = [
-    { BidID:1, SemesterStartDate: "29/1/2022", ClassID: 321, StudentID:1, StudentName:"Dingus", TokenAmount:1, Status:"Pending"},
-    { BidID:5, SemesterStartDate: "29/1/2022", ClassID: 123, StudentID:5, StudentName:"Bingus", TokenAmount:128, Status:"Pending"},
-    { BidID:2, SemesterStartDate: "29/1/2022", ClassID: 321, StudentID:2, StudentName:"Wingus", TokenAmount:130, Status:"Pending"},
-    { BidID:3, SemesterStartDate: "29/1/2022", ClassID: 321, StudentID:3, StudentName:"Fingus", TokenAmount:130, Status:"Pending"},
-    { BidID:12, SemesterStartDate: "29/1/2022", ClassID: 321, StudentID:12, StudentName:"Lingus", TokenAmount:130, Status:"Pending"},
+  const bidList = [
+    {
+      BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
+    },
+    {
+      BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 123, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
+    },
+    {
+      BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
+    },
+    {
+      BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
+    },
+    {
+      BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
+    },
   ];
 
   bidList.sort((a, b) => parseFloat(b.TokenAmount) - parseFloat(a.TokenAmount));
@@ -58,7 +68,6 @@ async function allocateClasses() {
   con.connect((err) => {
     if (err) {
       logger.error(`Error connecting to database. ${err.stack}`);
-      return
     }
   });
 
@@ -170,7 +179,7 @@ async function allocateClasses() {
 
 async function refundBids(failedBids) {
   console.log('refunded!');
-  return
+
   // for (let i = 0; i < failedBids.length; i++){
   //     await fetch(credit_api_endpoint, {
   //         method:'POST',

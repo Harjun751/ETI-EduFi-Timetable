@@ -16,10 +16,9 @@ const logger = createLogger({
   ],
 });
 
-
 async function award_tokens() {
   console.log('awarded!');
-  
+
   // get student list
   const student_api_endpoint = 'http://10.31.11.12:9211/api/v1/students/';
   const credit_api_endpoint = 'http://localhost:3000';
@@ -28,11 +27,11 @@ async function award_tokens() {
   await fetch(student_api_endpoint, {
     method: 'GET',
   }).then(async (res) => {
-      if (!res.ok) {
-        logger.crit(`Request to student API failed. ${err.stack}`);
-      }
-      res.json();
-    })
+    if (!res.ok) {
+      logger.crit(`Request to student API failed. ${err.stack}`);
+    }
+    res.json();
+  })
     .then((data) => { student_data = data; });
 
   // for (let i = 0; i < student_data.length; i++) {
@@ -43,4 +42,4 @@ async function award_tokens() {
   // }
 }
 
-award_tokens()
+award_tokens();
