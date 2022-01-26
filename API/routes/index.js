@@ -35,7 +35,7 @@ router.get('/api/v1/timetable/student/:studentID', (req, res) => {
 });
 
 router.get('/api/v1/timetable/tutor/:tutorID', (req, res) => {
-  const tutorID = req.params.tutorID;
+  const { tutorID } = req.params;
   // TODO: Get tutor allocation info from 3.8
   const html = '';
   res.render('timetable', { html });
@@ -77,14 +77,14 @@ module.exports = router;
 function createTable(classList) {
   const timingsDict = {
     '0900': 0,
-    '1000': 1,
-    '1100': 2,
-    '1200': 3,
-    '1300': 4,
-    '1400': 5,
-    '1500': 6,
-    '1600': 7,
-    '1700': 8,
+    1000: 1,
+    1100: 2,
+    1200: 3,
+    1300: 4,
+    1400: 5,
+    1500: 6,
+    1600: 7,
+    1700: 8,
   };
   const dayDict = {
     monday: [],

@@ -7,7 +7,7 @@ module.exports = {
   extends: [
     'airbnb-base',
   ],
-  rules:{
+  rules: {
     'linebreak-style': ['error', 'windows'],
   },
   parserOptions: {
