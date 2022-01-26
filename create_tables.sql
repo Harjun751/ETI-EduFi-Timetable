@@ -18,18 +18,10 @@ CREATE TABLE lesson(
 	FOREIGN KEY (class_id) REFERENCES class(id)
 );
 
-CREATE TABLE semester(
-	id INT AUTO_INCREMENT PRIMARY KEY,
-	start DATE,
-	end DATE
-);
-
-
 CREATE TABLE student_class_link(
 	student_id	INT,
 	class_id	INT,
-	semester	INT,
+	semester	VARCHAR(10),
 	FOREIGN KEY (student_id) REFERENCES student(id),
-	FOREIGN KEY (class_id) REFERENCES class(id),
-	FOREIGN KEY (semester) REFERENCES semester(id)
-)
+	FOREIGN KEY (class_id) REFERENCES class(id)
+);
