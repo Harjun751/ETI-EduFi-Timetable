@@ -95,9 +95,8 @@ async function allocateClasses() {
   const studentClassList = [];
   let currClass = null;
   for (let i = 0; i < bidList.length; i += 1) {
-    
     // TODO: check if a conditional is required here to skip the already failed bids
-    
+
     // Get class details from class list
     currClass = classList.find((x) => x.class_id === bidList[i].ClassID);
     if (currClass.enrolled < currClass.capacity) {
