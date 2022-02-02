@@ -36,7 +36,7 @@ router.get('/api/v1/timetable/student/:studentID', (req, res) => {
       if (error) throw error;
       const classDetails = results;
       const html = createTable(classDetails);
-      const uniqueModuleCodes = [...new Set(classDetails.map(x => x.module_code))];
+      const uniqueModuleCodes = [...new Set(classDetails.map((x) => x.module_code))];
       res.render('timetable', { html, uniqueModuleCodes });
     },
   );
@@ -63,7 +63,7 @@ router.get(
     con.query(
       {
         sql: 'SELECT student_id,class_id,semester from student_class_link INNER JOIN class ON student_class_link.class_id=class.id WHERE module_code = ? and semester = ?',
-        values: [[moduleCode,prevMonday]],
+        values: [[moduleCode, prevMonday]],
       },
       (error, results) => {
         if (error) throw error;
@@ -79,7 +79,7 @@ router.get('/api/v1/allocations/class/:class_id', (req, res) => {
   con.query(
     {
       sql: 'SELECT * from student_class_link WHERE class_id = ? and semester = ?',
-      values: [classID,prevMonday],
+      values: [classID, prevMonday],
     },
     (error, results) => {
       if (error) throw error;
@@ -92,7 +92,7 @@ module.exports = router;
 
 function createTable(classList) {
   const timingsDict = {
-    900:  0 + 2,
+    900: 0 + 2,
     1000: 1 + 2,
     1100: 2 + 2,
     1200: 3 + 2,
@@ -103,12 +103,12 @@ function createTable(classList) {
     1700: 8 + 2,
   };
   const dayToRow = {
-    "monday":2,
-    "tuesday":3,
-    "wednesday":4,
-    "thursday":5,
-    "friday":6,
-  }
+    monday: 2,
+    tuesday: 3,
+    wednesday: 4,
+    thursday: 5,
+    friday: 6,
+  };
   const dayDict = {
     monday: [],
     tuesday: [],
@@ -119,7 +119,7 @@ function createTable(classList) {
   // TODO: Refactor this if have time, fugly as hell
   for (let i = 0; i < classList.length; i += 1) {
     // Add row start value to class data
-    classList[i].rowStart = dayToRow[classList[i].day]
+    classList[i].rowStart = dayToRow[classList[i].day];
     // Push lesson for the day to respective day lists
     dayDict[classList[i].day].push(classList[i]);
     dayDict[classList[i].day].sort();
@@ -139,10 +139,10 @@ function createTable(classList) {
   return html;
 }
 
-function getPreviousMonday(){
+function getPreviousMonday() {
   const prevMonday = new Date();
   while (prevMonday.getDay() !== 1) {
     prevMonday.setDate(prevMonday.getDate() - 1);
   }
-  return `${prevMonday.getDate()}-${prevMonday.getMonth() + 1}-${prevMonday.getFullYear()}`
+  return `${prevMonday.getDate()}-${prevMonday.getMonth() + 1}-${prevMonday.getFullYear()}`;
 }
