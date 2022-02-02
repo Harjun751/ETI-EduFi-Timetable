@@ -17,6 +17,15 @@ con.connect((err) => {
   }
 });
 
+
+router.get('/timetable', (req, res) => {
+  // get authentication detail from cookie
+  // check if tutor or student
+  // return tutor/student 's timetable
+});
+
+
+
 // write logic to get timetable from database from here?
 router.get('/api/v1/timetable/student/:studentID', (req, res) => {
   const { studentID } = req.params;
@@ -37,7 +46,13 @@ router.get('/api/v1/timetable/student/:studentID', (req, res) => {
 router.get('/api/v1/timetable/tutor/:tutorID', (req, res) => {
   const { tutorID } = req.params;
   // TODO: Get tutor allocation info from 3.8
-  const html = '';
+  const classList = [{
+    class_id: 123, lessons: [{ day: 'monday', start: '0900', end: '1000' }, { day: 'wednesday', start: '0900', end: '1000' }], module_code: 'DL', capacity: 1, enrolled: 0,
+  },
+  {
+    class_id: 321, lessons: [{ day: 'monday', start: '1000', end: '1200' }, { day: 'wednesday', start: '1000', end: '1200' }], module_code: 'PRG', capacity: 3, enrolled: 0,
+  }];
+  const html = createTable(classDetails);
   res.render('timetable', { html });
 });
 

@@ -1,5 +1,6 @@
 // import fetch from 'node-fetch';
 const { createLogger, format, transports } = require('winston');
+const axios = require('axios');
 
 const {
   combine, timestamp, prettyPrint,
@@ -17,29 +18,34 @@ const logger = createLogger({
 });
 
 async function award_tokens() {
-  console.log('awarded!');
-
   // get student list
   const student_api_endpoint = 'http://10.31.11.12:9211/api/v1/students/';
-  const credit_api_endpoint = 'http://localhost:3000';
+  const credit_api_endpoint = 'http://localhost:9072/api/v1/Transactions/maketransaction/2';
 
   let student_data = [];
-  await fetch(student_api_endpoint, {
-    method: 'GET',
-  }).then(async (res) => {
-    if (!res.ok) {
-      logger.crit(`Request to student API failed. ${err.stack}`);
-    }
-    res.json();
-  })
-    .then((data) => { student_data = data; });
+  // await fetch(student_api_endpoint, {
+  //   method: 'GET',
+  // }).then(async (res) => {
+  //   if (!res.ok) {
+  //     logger.crit(`Request to student API failed. ${err.stack}`);
+  //   }
+  //   res.json();
+  // })
+  //   .then((data) => { student_data = data; });
 
-  // for (let i = 0; i < student_data.length; i++) {
-  //   await fetch(credit_api_endpoint, {
-  //     method: 'POST',
-  //     body: JSON.stringify({ credits: 20, student: student_data.student_id }),
-  //   });
-  // }
+  student_data = [{"StudentID":"S10198398"},{"StudentID":"S10183726"},{"StudentID":"S10198397"},{"StudentID":"SSSSSSSS"}]
+
+  for (let i = 0; i < student_data.length; i++) {
+    axios.post(credit_api_endpoint,{
+      StudentID: "0", //"ADMINID"
+      ToStudentID: student_data[i].StudentID,
+      TokenTypeID: 1,
+      TransactionType:"Automatic credit",
+      Amount:20
+    }).catch(function (error) {
+      logger.error(`Failed to automatically credit API data. ${error}`);
+    })
+  }
 }
 
 award_tokens();

@@ -1,7 +1,8 @@
 const mysql = require('mysql');
-// import fetch from ('node-fetch');
+const axios = require('axios');
 
 const { createLogger, format, transports } = require('winston');
+const { Console } = require('winston/lib/winston/transports');
 
 const {
   combine, timestamp, prettyPrint,
@@ -35,27 +36,35 @@ async function allocateClasses() {
   const semesterStartDate = `${nextMonday.getDate()}-${nextMonday.getMonth() + 1}-${nextMonday.getFullYear()}`;
 
   // Get bidding list
-  const bidAPIEndpoint = `http://localhost:3000/api/bids?Semester=${semesterStartDate}?Status=Pending`;
+  const bidAPIEndpoint = `http://localhost:9221/api/v1/bids?semesterStartDate=${semesterStartDate}&status=Pending&key=2c78afaf-97da-4816-bbee-9ad239abb298`;
   const classAPIEndpoint = 'http://localhost:3000';
 
+  var bidList;
+
+  await axios.get(bidAPIEndpoint).then(function (response) {
+    bidList = response.data;
+  }).catch(function (error) {
+    console.log(error);
+  })
+
   // Assumed returned data from bid api & class api
-  const bidList = [
-    {
-      BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
-    },
-    {
-      BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 123, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
-    },
-    {
-      BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
-    },
-    {
-      BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
-    },
-    {
-      BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
-    },
-  ];
+  // const bidList = [
+  //   {
+  //     BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
+  //   },
+  //   {
+  //     BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 123, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
+  //   },
+  //   {
+  //     BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
+  //   },
+  //   {
+  //     BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
+  //   },
+  //   {
+  //     BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
+  //   },
+  // ];
 
   bidList.sort((a, b) => parseFloat(b.TokenAmount) - parseFloat(a.TokenAmount));
   const classList = [{
@@ -166,26 +175,34 @@ async function allocateClasses() {
     logger.log({ level: 'info', message: 'Classes successfully allocated' });
     // update bid API on successful bids
 
-    // for (let i = 0; i < bidList.length; i += 1) {
-    //   fetch(bidAPIEndpoint, {
-    //     method: 'PUT',
-    //     body: JSON.stringify(bidList[i]),
-    //   });
-    // }
+    for (let i = 0; i < bidList.length; i += 1) {
+      var url = `http://localhost:9221/api/v1/bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`
+      axios.put(url,bidList[i])
+      .then(function (response) {
+        console.log(response)
+      }).catch(function (error) {
+        logger.error(`Failed to update bid list. ${error}`);
+      })
+    }
     // Call refund bids function
     refundBids(failedBids);
   }
 }
 
 async function refundBids(failedBids) {
-  console.log('refunded!');
+  const credit_api_endpoint = 'http://localhost:9072/api/v1/Transactions/maketransaction/1';
 
-  // for (let i = 0; i < failedBids.length; i++){
-  //     await fetch(credit_api_endpoint, {
-  //         method:'POST',
-  //         body: JSON.stringify({ StudentID:"ADMIN_ID", ToStudentID:failedBids[i].StudentID, TokenName: "ETI", TransactionType:"Failed Bid Refund", Amount:failedBids[i].TokenAmount })
-  //     })
-  // }
+  for (let i = 0; i < failedBids.length; i++){
+      axios.post(credit_api_endpoint,{
+        StudentID: "0", //"ADMINID"
+        ToStudentID: failedBids[i].StudentID,
+        TokenTypeID: 1,
+        TransactionType:"Failed Bid Refund",
+        Amount:failedBids[i].TokenAmount
+      }).catch(function (error) {
+        logger.error(`Failed to refund bid. ${error}`);
+      })
+  }
 }
 
 allocateClasses();
