@@ -39,13 +39,13 @@ async function allocateClasses() {
   const bidAPIEndpoint = `http://localhost:9221/api/v1/bids?semesterStartDate=${semesterStartDate}&status=Pending&key=2c78afaf-97da-4816-bbee-9ad239abb298`;
   const classAPIEndpoint = 'http://localhost:3000';
 
-  var bidList;
+  let bidList;
 
-  await axios.get(bidAPIEndpoint).then(function (response) {
+  await axios.get(bidAPIEndpoint).then((response) => {
     bidList = response.data;
-  }).catch(function (error) {
+  }).catch((error) => {
     console.log(error);
-  })
+  });
 
   // Assumed returned data from bid api & class api
   // const bidList = [
@@ -176,13 +176,13 @@ async function allocateClasses() {
     // update bid API on successful bids
 
     for (let i = 0; i < bidList.length; i += 1) {
-      var url = `http://localhost:9221/api/v1/bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`
-      axios.put(url,bidList[i])
-      .then(function (response) {
-        console.log(response)
-      }).catch(function (error) {
-        logger.error(`Failed to update bid list. ${error}`);
-      })
+      const url = `http://localhost:9221/api/v1/bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`;
+      axios.put(url, bidList[i])
+        .then((response) => {
+          console.log(response);
+        }).catch((error) => {
+          logger.error(`Failed to update bid list. ${error}`);
+        });
     }
     // Call refund bids function
     refundBids(failedBids);
@@ -192,16 +192,16 @@ async function allocateClasses() {
 async function refundBids(failedBids) {
   const credit_api_endpoint = 'http://localhost:9072/api/v1/Transactions/maketransaction/1';
 
-  for (let i = 0; i < failedBids.length; i++){
-      axios.post(credit_api_endpoint,{
-        StudentID: "0", //"ADMINID"
-        ToStudentID: failedBids[i].StudentID,
-        TokenTypeID: 1,
-        TransactionType:"Failed Bid Refund",
-        Amount:failedBids[i].TokenAmount
-      }).catch(function (error) {
-        logger.error(`Failed to refund bid. ${error}`);
-      })
+  for (let i = 0; i < failedBids.length; i++) {
+    axios.post(credit_api_endpoint, {
+      StudentID: '0', // "ADMINID"
+      ToStudentID: failedBids[i].StudentID,
+      TokenTypeID: 1,
+      TransactionType: 'Failed Bid Refund',
+      Amount: failedBids[i].TokenAmount,
+    }).catch((error) => {
+      logger.error(`Failed to refund bid. ${error}`);
+    });
   }
 }
 

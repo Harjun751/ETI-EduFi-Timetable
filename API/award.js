@@ -33,18 +33,18 @@ async function award_tokens() {
   // })
   //   .then((data) => { student_data = data; });
 
-  student_data = [{"StudentID":"S10198398"},{"StudentID":"S10183726"},{"StudentID":"S10198397"},{"StudentID":"SSSSSSSS"}]
+  student_data = [{ StudentID: 'S10198398' }, { StudentID: 'S10183726' }, { StudentID: 'S10198397' }, { StudentID: 'SSSSSSSS' }];
 
   for (let i = 0; i < student_data.length; i++) {
-    axios.post(credit_api_endpoint,{
-      StudentID: "0", //"ADMINID"
+    axios.post(credit_api_endpoint, {
+      StudentID: '0', // "ADMINID"
       ToStudentID: student_data[i].StudentID,
       TokenTypeID: 1,
-      TransactionType:"Automatic credit",
-      Amount:20
-    }).catch(function (error) {
+      TransactionType: 'Automatic credit',
+      Amount: 20,
+    }).catch((error) => {
       logger.error(`Failed to automatically credit API data. ${error}`);
-    })
+    });
   }
 }
 

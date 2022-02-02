@@ -17,14 +17,11 @@ con.connect((err) => {
   }
 });
 
-
 router.get('/timetable', (req, res) => {
   // get authentication detail from cookie
   // check if tutor or student
   // return tutor/student 's timetable
 });
-
-
 
 // write logic to get timetable from database from here?
 router.get('/api/v1/timetable/student/:studentID', (req, res) => {
