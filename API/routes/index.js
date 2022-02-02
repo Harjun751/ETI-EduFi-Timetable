@@ -131,7 +131,7 @@ function createTable(classList) {
       const start = timingsDict[day[i].start];
       const end = timingsDict[day[i].end];
       html
-        += `<div class="h-14 text-center text-lg col-start-${ start } col-end-${ end } row-start-${ day[i].rowStart }"><div class="h-10 pt-1 ${ day[i].module_code } mx-5 text-center border-solid border-black border-2 rounded-xl">${
+        += `<div class="h-14 pt-2 text-center text-lg col-start-${ start } col-end-${ end } row-start-${ day[i].rowStart }"><div class="h-10 c_transition pt-1 ${ day[i].module_code } mx-5 text-center border-solid border-black border-2 rounded-xl">${
           day[i].module_code
         }</div></div>`;
     }

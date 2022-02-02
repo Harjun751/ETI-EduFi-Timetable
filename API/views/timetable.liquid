@@ -13,6 +13,12 @@
         --color-3: white;
         --color-4: white;
         --color-5: white;
+
+        --bg-color-1: rgba(0,0,0,0);
+        --bg-color-2: rgba(0,0,0,0);
+        --bg-color-3: rgba(0,0,0,0);
+        --bg-color-4: rgba(0,0,0,0);
+        --bg-color-5: rgba(0,0,0,0);
     }
 
     {% for code in uniqueModuleCodes %}
@@ -20,54 +26,83 @@
             background: var(--color-{{ forloop.index }})
         }
     {% endfor %}
+    .time{
+        justify-content:start;
+    }
+    .c_transition{
+        -webkit-transition: background-color 100ms linear;
+        -ms-transition: background-color 100ms linear;
+        transition: background-color 100ms linear;
+    }
 </style>
 
 <body>
-    <select id="theme_id" onchange="changeStyles()">
+    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:8.333%; top:3.5rem;"></div>
+    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:25%; top:3.5rem;"></div>
+    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:41.666%; top:3.5rem;"></div>
+    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:58.333%; top:3.5rem;"></div>
+    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:75%; top:3.5rem;"></div>
+    <div class="c_transition w-9/12 h-14 absolute -z-10 left-40 top-14" style="background:var(--bg-color-1);"></div>
+    <div class="c_transition w-9/12 h-14 absolute -z-10 left-40 top-28" style="background:var(--bg-color-2);"></div>
+    <div class="c_transition w-9/12 h-14 absolute -z-10 left-40" style="background:var(--bg-color-3);top:10.5rem;"></div>
+    <div class="c_transition w-9/12 h-14 absolute -z-10 left-40" style="background:var(--bg-color-4);top:14rem;"></div>
+    <div class="c_transition w-9/12 h-14 absolute -z-10 left-40" style="background:var(--bg-color-5);top:17.5rem;"></div>
+    <div class="w-10/12 grid gap-0 grid-cols-10 grid-rows-6">
+        <span ></span>
+        <div style="left:7.333%" class="h-14 pt-3 absolute text-center text-lg col-start-2"><p>0900</p><p class="text-xs -mt-2">9am</p></div>
+        <div style="left:15.666%" class="h-14 pt-3 absolute text-center text-lg col-start-3"><p>1000</p><p class="text-xs -mt-2">10am</p></div>
+        <div style="left:24%" class="h-14 pt-3 absolute text-center text-lg"><p>1100</p><p class="text-xs -mt-2">11am</p></div>
+        <div style="left:32.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1200</p><p class="text-xs -mt-2">12pm</p></div>
+        <div style="left:40.666%" class="h-14 pt-3 absolute text-center text-lg"><p>1300</p><p class="text-xs -mt-2">1pm</p></div>
+        <div style="left:49%" class="h-14 pt-3 absolute text-center text-lg"><p>1400</p><p class="text-xs -mt-2">2pm</p></div>
+        <div style="left:57.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1500</p><p class="text-xs -mt-2">3pm</p></div>
+        <div style="left:65.666%" class="h-14 pt-3 absolute text-center text-lg"><p>1600</p><p class="text-xs -mt-2">4pm</p></div>
+        <div style="left:74%" class="h-14 pt-3 absolute text-center text-lg"><p>1700</p><p class="text-xs -mt-2">5pm</p></div>
+        <div style="left:82.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1800</p><p class="text-xs -mt-2">6pm</p></div>
+        <div class="text-right pr-4 h-14 text-left row-start-2">Monday</div>
+        <div class="text-right pr-4 h-14 text-left row-start-3">Tuesday</div>
+        <div class="text-right pr-4 h-14 text-left row-start-4">Wednesday</div>
+        <div class="text-right pr-4 h-14 text-left row-start-5">Thursday</div>
+        <div class="text-right pr-4 h-14 text-left row-start-6">Friday</div>
+        {{ html }} 
+    </div>
+    <p>Theme:</p><select id="theme_id" onchange="changeStyles()">
         <option value="0">Default</option>
         <option value="1">Retro</option>
         <option value="2">Drab</option>
+        <option value="3">Summer</option>
+        <option value="4">Cool</option>
+        <option value="5">Rainbow</option>
     </select>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:21rem;left:16.666%"></div>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:21rem;left:33.333%"></div>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:21rem;left:50%"></div>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:21rem;left:66.666%"></div>
-    <div class="w-10/12 grid gap-0 grid-cols-10 grid-rows-6">
-        <span ></span>
-        <div class="h-14 text-center text-lg col-start-2">0900</br><p class="text-xs -mt-2">9am</p></div>
-        <div class="h-14 text-center text-lg col-start-3">1000</br><p class="text-xs -mt-2">10am</p></div>
-        <div class="h-14 text-center text-lg">1100</br><p class="text-xs -mt-2">11am</p></div>
-        <div class="h-14 text-center text-lg">1200</br><p class="text-xs -mt-2">12pm</p></div>
-        <div class="h-14 text-center text-lg">1300</br><p class="text-xs -mt-2">1pm</p></div>
-        <div class="h-14 text-center text-lg">1400</br><p class="text-xs -mt-2">2pm</p></div>
-        <div class="h-14 text-center text-lg">1500</br><p class="text-xs -mt-2">3pm</p></div>
-        <div class="h-14 text-center text-lg">1600</br><p class="text-xs -mt-2">4pm</p></div>
-        <div class="h-14 text-center text-lg">1700</br><p class="text-xs -mt-2">5pm</p></div>
-        <div class="h-14 text-left row-start-2">Monday:</div>
-        <div class="h-14 text-left row-start-3">Tuesday:</div>
-        <div class="h-14 text-left row-start-4">Wednesday:</div>
-        <div class="h-14 text-left row-start-5">Thursday:</div>
-        <div class="h-14 text-left row-start-6">Friday:</div>
-        {{ html }} 
-    </div>
 </body>
 </html>
 
 <script>
     var uniqueMods = {{ uniqueModuleCodes | json }}
     var styles={
-        0:["rgb(216 180 254)","rgb(100 255 105)"],
-        1:["#E76F51","#264653", "#E9C46A", "#F4A261", "#2A9D8F"],
-        2:["#CB997E","#A5A58D", "#FFE8D6", "#DDBEA9", "#B7B7A4"],
+        0:{"fg":["#D9E2FF","#D9E2FF","#D9E2FF","#D9E2FF","#D9E2FF",],"bg":[]},
+        // 0:{"fg":["rgb(216 180 254)","rgb(100 255 105)"],"bg":[]},
+        1:{"fg":["#E76F51","#264653", "#E9C46A", "#F4A261", "#2A9D8F"],"bg":[]},
+        2:{"fg":["#CB997E","#A5A58D", "#FFE8D6", "#DDBEA9", "#B7B7A4"],"bg":[]},
+        3:{"fg":["#B0CDE3","#B0CDE3", "#B0CDE3", "#B0CDE3", "#B0CDE3"],"bg":["rgba(255,237,188,0.5)","rgba(255,244,216,0.5)","rgba(255,237,188,0.5)","rgba(255,244,216,0.5)","rgba(255,237,188,0.5)"]},
+        4:{"fg":["#FFF","#FFF", "#FFF", "#FFF", "#FFF"],"bg":["rgba(217,226,255,0.5)","rgba(241,244,255,0.5)","rgba(217,226,255,0.5)","rgba(241,244,255,0.5)","rgba(217,226,255,0.5)"]},
+        5:{"fg":["#FFF","#FFF", "#FFF", "#FFF", "#FFF"],"bg":["rgba(255,206,206,0.5)","rgba(255,232,205,0.5)","rgba(255,255,217,0.5)","rgba(239,255,241,0.5)","rgba(228,217,255,0.5)"]},
     }
     
-    for (let i = 0; i< uniqueMods.length; i++){
-        document.documentElement.style.setProperty(('--color-'+String(i+1)), styles[0][i]);
-    }
+    changeStyles()
 
     function changeStyles(){
         for (let i = 0; i< uniqueMods.length; i++){
-            document.documentElement.style.setProperty(('--color-'+String(i+1)), styles[document.getElementById("theme_id").value][i]);
+            var curr_style = styles[document.getElementById("theme_id").value]
+            document.documentElement.style.setProperty(('--color-'+String(i+1)), curr_style["fg"][i]);
+            console.log(curr_style["bg"])
+            if (curr_style["bg"]!=[]){
+                document.documentElement.style.setProperty('--bg-color-1', curr_style["bg"][0]);
+                document.documentElement.style.setProperty('--bg-color-2', curr_style["bg"][1]);
+                document.documentElement.style.setProperty('--bg-color-3', curr_style["bg"][2]);
+                document.documentElement.style.setProperty('--bg-color-4', curr_style["bg"][3]);
+                document.documentElement.style.setProperty('--bg-color-5', curr_style["bg"][4]);
+            }
         }
     }
 </script>
