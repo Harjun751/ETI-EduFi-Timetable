@@ -39,32 +39,32 @@ async function allocateClasses() {
   const bidAPIEndpoint = `http://localhost:9221/api/v1/bids?semesterStartDate=${semesterStartDate}&status=Pending&key=2c78afaf-97da-4816-bbee-9ad239abb298`;
   const classAPIEndpoint = 'http://localhost:3000';
 
-  let bidList;
+  // let bidList;
 
-  await axios.get(bidAPIEndpoint).then((response) => {
-    bidList = response.data;
-  }).catch((error) => {
-    console.log(error);
-  });
+  // await axios.get(bidAPIEndpoint).then((response) => {
+  //   bidList = response.data;
+  // }).catch((error) => {
+  //   logger.error(`Failed to get bid list. ${error}`);
+  // });
 
   // Assumed returned data from bid api & class api
-  // const bidList = [
-  //   {
-  //     BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 123, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
-  //   },
-  // ];
+  const bidList = [
+    {
+      BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
+    },
+    {
+      BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 123, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
+    },
+    {
+      BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
+    },
+    {
+      BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
+    },
+    {
+      BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
+    },
+  ];
 
   bidList.sort((a, b) => parseFloat(b.TokenAmount) - parseFloat(a.TokenAmount));
   const classList = [{
@@ -86,7 +86,6 @@ async function allocateClasses() {
     const toRemove = bidList.filter((x) => x.ClassID === y.class_id);
     if (toRemove.length < 3) {
       failedBids.push(...toRemove);
-      // Instead of removing
       for (let i = 0; i < toRemove.length; i += 1) {
         bidList.find((x) => x.BidID === toRemove[i].BidID).Status = 'Failed';
       }
@@ -96,6 +95,9 @@ async function allocateClasses() {
   const studentClassList = [];
   let currClass = null;
   for (let i = 0; i < bidList.length; i += 1) {
+    
+    // TODO: check if a conditional is required here to skip the already failed bids
+    
     // Get class details from class list
     currClass = classList.find((x) => x.class_id === bidList[i].ClassID);
     if (currClass.enrolled < currClass.capacity) {
@@ -175,21 +177,22 @@ async function allocateClasses() {
     logger.log({ level: 'info', message: 'Classes successfully allocated' });
     // update bid API on successful bids
 
-    for (let i = 0; i < bidList.length; i += 1) {
-      const url = `http://localhost:9221/api/v1/bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`;
-      axios.put(url, bidList[i])
-        .then((response) => {
-          console.log(response);
-        }).catch((error) => {
-          logger.error(`Failed to update bid list. ${error}`);
-        });
-    }
+    // for (let i = 0; i < bidList.length; i += 1) {
+    //   const url = `http://localhost:9221/api/v1/bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`;
+    //   axios.put(url, bidList[i])
+    //     .then((response) => {
+    //       console.log(response);
+    //     }).catch((error) => {
+    //       logger.error(`Failed to update bid list. ${error}`);
+    //     });
+    // }
     // Call refund bids function
     refundBids(failedBids);
   }
 }
 
 async function refundBids(failedBids) {
+  return;
   const credit_api_endpoint = 'http://localhost:9072/api/v1/Transactions/maketransaction/1';
 
   for (let i = 0; i < failedBids.length; i++) {

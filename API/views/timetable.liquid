@@ -4,9 +4,30 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="/stylesheets/output.css" rel="stylesheet">
-</head>               
-                      
-<body>                
+</head>
+
+<style>
+    :root{
+        --color-1: white;
+        --color-2: white;
+        --color-3: white;
+        --color-4: white;
+        --color-5: white;
+    }
+
+    {% for code in uniqueModuleCodes %}
+        .{{ code }} {
+            background: var(--color-{{ forloop.index }})
+        }
+    {% endfor %}
+</style>
+
+<body>
+    <select id="theme_id" onchange="changeStyles()">
+        <option value="0">Default</option>
+        <option value="1">Retro</option>
+        <option value="2">Drab</option>
+    </select>
     <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:21rem;left:16.666%"></div>
     <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:21rem;left:33.333%"></div>
     <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:21rem;left:50%"></div>
@@ -31,3 +52,22 @@
     </div>
 </body>
 </html>
+
+<script>
+    var uniqueMods = {{ uniqueModuleCodes | json }}
+    var styles={
+        0:["rgb(216 180 254)","rgb(100 255 105)"],
+        1:["#E76F51","#264653", "#E9C46A", "#F4A261", "#2A9D8F"],
+        2:["#CB997E","#A5A58D", "#FFE8D6", "#DDBEA9", "#B7B7A4"],
+    }
+    
+    for (let i = 0; i< uniqueMods.length; i++){
+        document.documentElement.style.setProperty(('--color-'+String(i+1)), styles[0][i]);
+    }
+
+    function changeStyles(){
+        for (let i = 0; i< uniqueMods.length; i++){
+            document.documentElement.style.setProperty(('--color-'+String(i+1)), styles[document.getElementById("theme_id").value][i]);
+        }
+    }
+</script>
