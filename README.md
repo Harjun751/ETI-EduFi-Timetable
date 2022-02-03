@@ -17,14 +17,14 @@ The API Documentation [is also viewable here](https://documenter.getpostman.com/
 
 The architecture diagram is shown below:
 
-![Architecture Diagram](images/architectureDiagram.png)
+![Architecture Diagram](Images/architectureDiagram.png)
 
 
 ## Network Communication
 Instances in which inter-microservice communication is required is shown below.
 
 The first instance is the allocation of bids.
-![Allocation Flow](images/allocationFlow.png)
+![Allocation Flow](Images/allocationFlow.png)
 
 
 ## How does it work?
