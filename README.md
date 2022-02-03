@@ -13,6 +13,20 @@ This module exposes some endpoints to obtain data from. They are shown below.
 
 The API Documentation [is also viewable here](https://documenter.getpostman.com/view/19284028/UVXqFYo2)
 
+## Architecture Diagram
+
+The architecture diagram is shown below:
+
+![Architecture Diagram](images/architectureDiagram.png)
+
+
+## Network Communication
+Instances in which inter-microservice communication is required is shown below.
+
+The first instance is the allocation of bids.
+![Allocation Flow](images/allocationFlow.png)
+
+
 ## How does it work?
 This section will go through the planned steps in which the microservice accomplshes it's tasks. It's mostly for my own reference.
 
