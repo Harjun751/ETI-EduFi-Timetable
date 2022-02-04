@@ -3,19 +3,14 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-// TODO: Replace these with envvars
-const con = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: 'edufi',
-  password: 'password',
-  database: 'edufi',
+var pool  = mysql.createPool({
+  connectionLimit : 10,
+  host            : process.env.DB_HOST,
+  user            : 'edufi',
+  password        : 'password',
+  database        : 'edufi'
 });
 
-con.connect((err) => {
-  if (err) {
-    throw err;
-  }
-});
 
 router.get('/timetable', (req, res) => {
   // get authentication detail from cookie
@@ -27,13 +22,16 @@ router.get('/timetable', (req, res) => {
 router.get('/api/v1/timetable/student/:studentID', (req, res) => {
   const { studentID } = req.params;
   const prevMonday = getPreviousMonday();
-  con.query(
+  pool.query(
     {
       sql: 'SELECT s.class_id, c.module_code, l.day, l.start, l.end from student_class_link as s INNER JOIN lesson as l on l.class_id = s.class_id INNER JOIN class as c on c.id = s.class_id where student_id=? and semester = ?',
       values: [studentID, prevMonday],
     },
     (error, results) => {
-      if (error) throw error;
+      if (error){
+        // pass error to expressjs error handler
+        next(error);
+      }
       const classDetails = results;
       const html = createTable(classDetails);
       const uniqueModuleCodes = [...new Set(classDetails.map((x) => x.module_code))];
@@ -57,16 +55,18 @@ router.get('/api/v1/timetable/tutor/:tutorID', (req, res) => {
 
 router.get(
   '/api/v1/allocations/module/:module_code',
-  (req, res) => {
+  (req, res, next) => {
     const moduleCode = req.params.module_code;
     const prevMonday = getPreviousMonday();
-    con.query(
+    pool.query(
       {
         sql: 'SELECT student_id,class_id,semester from student_class_link INNER JOIN class ON student_class_link.class_id=class.id WHERE module_code = ? and semester = ?',
-        values: [[moduleCode, prevMonday]],
+        values: [moduleCode, prevMonday],
       },
       (error, results) => {
-        if (error) throw error;
+        if (error){
+          next(error);
+        };
         res.send(results);
       },
     );
@@ -76,13 +76,16 @@ router.get(
 router.get('/api/v1/allocations/class/:class_id', (req, res) => {
   const classID = req.params.class_id;
   const prevMonday = getPreviousMonday();
-  con.query(
+  pool.query(
     {
       sql: 'SELECT * from student_class_link WHERE class_id = ? and semester = ?',
       values: [classID, prevMonday],
     },
     (error, results) => {
-      if (error) throw error;
+      if (error){
+        // pass error to expressjs error handler
+        next(error);
+      }
       res.send(results);
     },
   );
