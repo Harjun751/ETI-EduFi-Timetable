@@ -12,7 +12,7 @@ const pool = mysql.createPool({
   database: 'edufi',
 });
 
-const classAPIGet = "http://localhost:9101/api/v1/class?key=2c78afaf-97da-4816-bbee-9ad239abb296"
+const classAPIGet = 'http://localhost:9101/api/v1/class?key=2c78afaf-97da-4816-bbee-9ad239abb296';
 
 router.get('/timetable', (req, res) => {
   // get authentication detail from cookie
@@ -26,21 +26,23 @@ router.get('/api/v1/timetable/student/:studentID', (req, res, next) => {
   let classDetails;
   let allClasses;
 
-  const queryPromise = new Promise((resolve,reject) => {pool.query(
-    {
-      sql: 'SELECT * from student_class_link WHERE student_id=? and semester=?',
-      values: [studentID, prevMonday],
-    },
-    (error, results) => {
-      if (error) {
+  const queryPromise = new Promise((resolve, reject) => {
+    pool.query(
+      {
+        sql: 'SELECT * from student_class_link WHERE student_id=? and semester=?',
+        values: [studentID, prevMonday],
+      },
+      (error, results) => {
+        if (error) {
         // pass error to expressjs error handler
-        next(error);
-        reject(error);
-      }
-      classDetails = results;
-      resolve();
-    },
-  )});
+          next(error);
+          reject(error);
+        }
+        classDetails = results;
+        resolve();
+      },
+    );
+  });
 
   const getPromise = axios.get(classAPIGet).then((response) => {
     allClasses = response.data;
@@ -49,9 +51,9 @@ router.get('/api/v1/timetable/student/:studentID', (req, res, next) => {
   });
 
   // Wait for GET to Class MS and query to DB before next part
-  Promise.all([queryPromise,getPromise]).then(()=>{
-    classDetails = classDetails.map(x=>x.class_id);
-    allClasses = allClasses.filter(x=>classDetails.includes(x.classid));
+  Promise.all([queryPromise, getPromise]).then(() => {
+    classDetails = classDetails.map((x) => x.class_id);
+    allClasses = allClasses.filter((x) => classDetails.includes(x.classid));
     const html = createTable(allClasses);
     const uniqueModuleCodes = [...new Set(allClasses.map((x) => x.moduleid))];
     res.render('timetable', { html, uniqueModuleCodes });
@@ -61,8 +63,8 @@ router.get('/api/v1/timetable/student/:studentID', (req, res, next) => {
 router.get('/api/v1/timetable/tutor/:tutorID', (req, res, next) => {
   const { tutorID } = req.params;
   axios.get(classAPIGet).then((response) => {
-    var classList = response.data;
-    classList = classList.filter(x=>x.tutorid===tutorID);
+    let classList = response.data;
+    classList = classList.filter((x) => x.tutorid === tutorID);
     const html = createTable(classList);
     res.render('timetable', { html });
   }).catch((error) => {
@@ -78,8 +80,8 @@ router.get(
 
     let classID;
     await axios.get(classAPIGet).then((response) => {
-      var classList = response.data;
-      var class_ = classList.find(x=>x.moduleid===moduleCode);
+      const classList = response.data;
+      const class_ = classList.find((x) => x.moduleid === moduleCode);
       classID = class_.classid;
     }).catch((error) => {
       next(error);
@@ -98,7 +100,7 @@ router.get(
         res.send(results);
       },
     );
-  }
+  },
 );
 
 router.get('/api/v1/allocations/class/:class_id', (req, res, next) => {
@@ -124,7 +126,7 @@ module.exports = router;
 function createTable(classList) {
   // Halfway support? 0930?
   const timeToCol = {
-    "0900": 0 + 2,
+    '0900': 0 + 2,
     1000: 1 + 2,
     1100: 2 + 2,
     1200: 3 + 2,

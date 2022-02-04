@@ -27,7 +27,7 @@ const con = mysql.createConnection({
   database: 'edufi',
 });
 
-async function allocateClasses(){
+async function allocateClasses() {
   // ----- STEP 1: Get bids ----- //
   const nextMonday = new Date();
   while (nextMonday.getDay() !== 1) {
@@ -37,8 +37,8 @@ async function allocateClasses(){
   const semesterStartDate = `${nextMonday.getDate()}-${nextMonday.getMonth() + 1}-${nextMonday.getFullYear()}`;
 
   // Get bidding list
-  const bidAPIEndpoint = `http://localhost:9221/api/v1/`;
-  const apiKey = 'key=2c78afaf-97da-4816-bbee-9ad239abb298'
+  const bidAPIEndpoint = 'http://localhost:9221/api/v1/';
+  const apiKey = 'key=2c78afaf-97da-4816-bbee-9ad239abb298';
 
   // GET request to bid API
   let bidList;
@@ -72,13 +72,13 @@ async function allocateClasses(){
 
   // ----- STEP 2: GET Class Details ----- //
   let classList;
-  await axios.get("http://localhost:9101/api/v1/class?key=2c78afaf-97da-4816-bbee-9ad239abb296").then((response) => {
+  await axios.get('http://localhost:9101/api/v1/class?key=2c78afaf-97da-4816-bbee-9ad239abb296').then((response) => {
     classList = response.data;
   }).catch((error) => {
     logger.error(`Failed to get class list. ${error}`);
   });
   // Add enrolled col to classlist for tracking
-  classList = classList.map(x=> {x.enrolled = 0; return x;} );
+  classList = classList.map((x) => { x.enrolled = 0; return x; });
 
   // ----- STEP 3: Allocate Classes to Students ----- //
   // Sort Bidlist in descending bid amount
@@ -87,58 +87,55 @@ async function allocateClasses(){
   // if class enrolment less than 3, no class
   // Hence if <3 ppl bid on a class automatically mark as fail
   // Get dict of class:amount of bids
-  var bidsForClass = {}
-  for (let bid of bidList){
-    if (bidsForClass[bid.ClassID]?.push){
+  const bidsForClass = {};
+  for (const bid of bidList) {
+    if (bidsForClass[bid.ClassID]?.push) {
       bidsForClass[bid.ClassID].push(bid);
-    }
-    else{
+    } else {
       bidsForClass[bid.ClassID] = [bid];
     }
   }
-  for (let class_ of Object.keys(bidsForClass)){
-    if (bidsForClass[class_].length <= 3){
-      currBids = bidsForClass[class_].map(x=>x.BidID);
-      bidList = bidList.map(x=> {
-        if (currBids.includes(x.BidID)){
-          x.Status = "Failed"
-        };
-        return x
-      })
+  for (const class_ of Object.keys(bidsForClass)) {
+    if (bidsForClass[class_].length <= 3) {
+      currBids = bidsForClass[class_].map((x) => x.BidID);
+      bidList = bidList.map((x) => {
+        if (currBids.includes(x.BidID)) {
+          x.Status = 'Failed';
+        }
+        return x;
+      });
     }
   }
 
   // Go through every bid and allocate til class cap is reached
-  for (let bid of bidList){
+  for (const bid of bidList) {
     // Skip iteration if bid status is failed
-    if (bid.Status==="Failed"){
+    if (bid.Status === 'Failed') {
       continue;
     }
 
-    let class_ = classList.find(x=>x.classid===bid.ClassID);
-    if (class_.enrolled<class_.classcap){
+    const class_ = classList.find((x) => x.classid === bid.ClassID);
+    if (class_.enrolled < class_.classcap) {
       // Assign Bid
-      class_.enrolled+=1;
-      bid.Status = "Success";
-    }
-    else{
+      class_.enrolled += 1;
+      bid.Status = 'Success';
+    } else {
       // Set faild status
-      bid.Status = "Failed";
+      bid.Status = 'Failed';
     }
   }
 
   // ----- STEP 4: Insert succeeded bids into timetable ----- //
-  const studentLinkDetails = bidList.map(x => [x.StudentID, x.ClassID, semesterStartDate])
+  const studentLinkDetails = bidList.map((x) => [x.StudentID, x.ClassID, semesterStartDate]);
   con.query({
     sql: 'INSERT INTO student_class_link VALUES ?',
     values: [studentLinkDetails],
-  }, function(error){
-    if (error){
-      logger.error(`Failed to insert timetable. ${error}`);   
+  }, (error) => {
+    if (error) {
+      logger.error(`Failed to insert timetable. ${error}`);
     }
     // ---------- STEP 5: Update Bid List ---------- //
 
-    
     // for (let i = 0; i < bidList.length; i += 1) {
     //   const url = `http://localhost:9221/api/v1/bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`;
     //   axios.put(url, bidList[i])
@@ -150,7 +147,7 @@ async function allocateClasses(){
     // }
 
     // ---------- STEP 6: Refund Failed Bids ---------- //
-    var failedBids = bidList.filter(x=>x.Status==="Failed");
+    const failedBids = bidList.filter((x) => x.Status === 'Failed');
 
     // for (let i = 0; i < failedBids.length; i++) {
     //   axios.post("http://localhost:9072/api/v1/Transactions/maketransaction/1", {
@@ -166,8 +163,7 @@ async function allocateClasses(){
 
     // End connection
     con.end();
-  });  
+  });
 }
-
 
 allocateClasses();
