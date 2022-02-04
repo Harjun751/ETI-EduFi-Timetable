@@ -3,6 +3,7 @@ const axios = require('axios');
 
 const { createLogger, format, transports } = require('winston');
 const { Console } = require('winston/lib/winston/transports');
+const { connect } = require('./routes');
 
 const {
   combine, timestamp, prettyPrint,
@@ -26,8 +27,8 @@ const con = mysql.createConnection({
   database: 'edufi',
 });
 
-async function allocateClasses() {
-  // TODO: Check server time and docker scheduler
+async function allocateClasses(){
+  // ----- STEP 1: Get bids ----- //
   const nextMonday = new Date();
   while (nextMonday.getDay() !== 1) {
     nextMonday.setDate(nextMonday.getDate() + 1);
@@ -36,146 +37,108 @@ async function allocateClasses() {
   const semesterStartDate = `${nextMonday.getDate()}-${nextMonday.getMonth() + 1}-${nextMonday.getFullYear()}`;
 
   // Get bidding list
-  const bidAPIEndpoint = `http://localhost:9221/api/v1/bids?semesterStartDate=${semesterStartDate}&status=Pending&key=2c78afaf-97da-4816-bbee-9ad239abb298`;
-  const classAPIEndpoint = 'http://localhost:3000';
+  const bidAPIEndpoint = `http://localhost:9221/api/v1/`;
+  const apiKey = 'key=2c78afaf-97da-4816-bbee-9ad239abb298'
 
-  // let bidList;
-
-  // await axios.get(bidAPIEndpoint).then((response) => {
+  // GET request to bid API
+  let bidList;
+  // await axios.get(bidAPIEndpoint + `bids?semesterStartDate=${semesterStartDate}&status=Pending&` + apiKey)
+  // .then((response) => {
   //   bidList = response.data;
   // }).catch((error) => {
   //   logger.error(`Failed to get bid list. ${error}`);
   // });
 
-  // Assumed returned data from bid api & class api
-  const bidList = [
+  bidList = [
     {
-      BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
+      BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
     },
     {
-      BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 123, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
+      BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 2, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
     },
     {
-      BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
+      BidID: 7, SemesterStartDate: '29/1/2022', ClassID: 2, StudentID: 3, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
     },
     {
-      BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
+      BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
     },
     {
-      BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 321, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
+      BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
+    },
+    {
+      BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
     },
   ];
 
+  // ----- STEP 2: GET Class Details ----- //
+  let classList;
+  await axios.get("http://localhost:9101/api/v1/class?key=2c78afaf-97da-4816-bbee-9ad239abb296").then((response) => {
+    classList = response.data;
+  }).catch((error) => {
+    logger.error(`Failed to get class list. ${error}`);
+  });
+  // Add enrolled col to classlist for tracking
+  classList = classList.map(x=> {x.enrolled = 0; return x;} );
+
+  // ----- STEP 3: Allocate Classes to Students ----- //
+  // Sort Bidlist in descending bid amount
   bidList.sort((a, b) => parseFloat(b.TokenAmount) - parseFloat(a.TokenAmount));
-  const classList = [{
-    class_id: 123, lessons: [{ day: 'monday', start: '0900', end: '1000' }, { day: 'wednesday', start: '0900', end: '1000' }], module_code: 'DL', capacity: 1, enrolled: 0,
-  },
-  {
-    class_id: 321, lessons: [{ day: 'monday', start: '1000', end: '1200' }, { day: 'wednesday', start: '1000', end: '1200' }], module_code: 'PRG', capacity: 3, enrolled: 0,
-  }];
 
-  con.connect((err) => {
-    if (err) {
-      logger.error(`Error connecting to database. ${err.stack}`);
+  // if class enrolment less than 3, no class
+  // Hence if <3 ppl bid on a class automatically mark as fail
+  // Get dict of class:amount of bids
+  var bidsForClass = {}
+  for (let bid of bidList){
+    if (bidsForClass[bid.ClassID]?.push){
+      bidsForClass[bid.ClassID].push(bid);
     }
-  });
-
-  const failedBids = [];
-  // Add bids where bids < 3 to the failed bids list
-  classList.forEach((y) => {
-    const toRemove = bidList.filter((x) => x.ClassID === y.class_id);
-    if (toRemove.length < 3) {
-      failedBids.push(...toRemove);
-      for (let i = 0; i < toRemove.length; i += 1) {
-        bidList.find((x) => x.BidID === toRemove[i].BidID).Status = 'Failed';
-      }
+    else{
+      bidsForClass[bid.ClassID] = [bid];
     }
-  });
-
-  const studentClassList = [];
-  let currClass = null;
-  for (let i = 0; i < bidList.length; i += 1) {
-    // TODO: check if a conditional is required here to skip the already failed bids
-
-    // Get class details from class list
-    currClass = classList.find((x) => x.class_id === bidList[i].ClassID);
-    if (currClass.enrolled < currClass.capacity) {
-      // Add student to student-class list only if the enrolled value  is OK
-      studentClassList.push({ student_id: bidList[i].StudentID, class_id: currClass.class_id });
-      bidList[i].Status = 'Success';
-      currClass.enrolled += 1;
-    } else {
-      // push failed bid with bid amnt to another list
-      bidList[i].Status = 'Failed';
-      failedBids.push({ student_id: bidList[i].StudentID, bid_amount: bidList[i].TokenAmount });
+  }
+  for (let class_ of Object.keys(bidsForClass)){
+    if (bidsForClass[class_].length <= 3){
+      currBids = bidsForClass[class_].map(x=>x.BidID);
+      bidList = bidList.map(x=> {
+        if (currBids.includes(x.BidID)){
+          x.Status = "Failed"
+        };
+        return x
+      })
     }
   }
 
-  const uniqueClassIDs = [...new Set(studentClassList.map((x) => x.class_id))];
-  const uniqueStudentIDs = [...new Set(studentClassList.map((x) => x.student_id))];
+  // Go through every bid and allocate til class cap is reached
+  for (let bid of bidList){
+    // Skip iteration if bid status is failed
+    if (bid.Status==="Failed"){
+      continue;
+    }
 
-  // Insert class data
-  // Update module code if necessary
-  const uniqueClassDetails = uniqueClassIDs.map((x) => {
-    const moduleCode = classList.find((y) => y.class_id === x).module_code;
-    return [x, moduleCode];
-  });
+    let class_ = classList.find(x=>x.classid===bid.ClassID);
+    if (class_.enrolled<class_.classcap){
+      // Assign Bid
+      class_.enrolled+=1;
+      bid.Status = "Success";
+    }
+    else{
+      // Set faild status
+      bid.Status = "Failed";
+    }
+  }
+
+  // ----- STEP 4: Insert succeeded bids into timetable ----- //
+  const studentLinkDetails = bidList.map(x => [x.StudentID, x.ClassID, semesterStartDate])
   con.query({
-    sql: 'INSERT INTO class VALUES ? ON DUPLICATE KEY UPDATE module_code=VALUES(module_code);',
-    values: [uniqueClassDetails],
-  }, insertLessons);
+    sql: 'INSERT INTO student_class_link VALUES ?',
+    values: [studentLinkDetails],
+  }, function(error){
+    if (error){
+      logger.error(`Failed to insert timetable. ${error}`);   
+    }
+    // ---------- STEP 5: Update Bid List ---------- //
 
-  // Insert lessons
-  function insertLessons() {
-    const lessonDetails = uniqueClassIDs.map((x) => {
-      const deets = [];
-      const thisClass = classList.find((y) => y.class_id === x);
-      thisClass.lessons.forEach((lesson) => {
-        deets.push([x, lesson.start, lesson.end, lesson.day]);
-      });
-      return deets;
-    });
-    con.query({
-      // pretend this is fine
-      // TODO: refine data structure
-      sql: 'DELETE FROM lesson',
-    }, () => {
-      con.query({
-        sql: 'INSERT INTO lesson (class_id,start,end,day) VALUES ?',
-        values: lessonDetails,
-      }, insertStudent);
-    });
-  }
-
-  // insert students
-  function insertStudent(error) {
-    if (error) throw error;
-    const formattedStudentID = uniqueStudentIDs.map((x) => [x]);
-    // Create students
-    con.query({
-      sql: 'INSERT IGNORE INTO student VALUES ?',
-      values: [formattedStudentID],
-    }, insertLink);
-  }
-
-  // Insert the timetable data
-  function insertLink(error) {
-    if (error) throw error;
-    const studentLinkDetails = studentClassList.map(
-      (x) => [x.student_id, x.class_id, semesterStartDate],
-    );
-    // Create student-class linkage
-    con.query({
-      sql: 'INSERT INTO student_class_link VALUES ?',
-      values: [studentLinkDetails],
-    }, updateBids);
-  }
-  function updateBids(error) {
-    if (error) throw error;
-    // Log if all is good
-    logger.log({ level: 'info', message: 'Classes successfully allocated' });
-    // update bid API on successful bids
-
+    
     // for (let i = 0; i < bidList.length; i += 1) {
     //   const url = `http://localhost:9221/api/v1/bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`;
     //   axios.put(url, bidList[i])
@@ -185,26 +148,26 @@ async function allocateClasses() {
     //       logger.error(`Failed to update bid list. ${error}`);
     //     });
     // }
-    // Call refund bids function
-    refundBids(failedBids);
-  }
+
+    // ---------- STEP 6: Refund Failed Bids ---------- //
+    var failedBids = bidList.filter(x=>x.Status==="Failed");
+
+    // for (let i = 0; i < failedBids.length; i++) {
+    //   axios.post("http://localhost:9072/api/v1/Transactions/maketransaction/1", {
+    //     StudentID: '0', // "ADMINID"
+    //     ToStudentID: failedBids[i].StudentID,
+    //     TokenTypeID: 1,
+    //     TransactionType: 'Failed Bid Refund',
+    //     Amount: failedBids[i].TokenAmount,
+    //   }).catch((error) => {
+    //     logger.error(`Failed to refund bid. ${error}`);
+    //   });
+    // }
+
+    // End connection
+    con.end();
+  });  
 }
 
-async function refundBids(failedBids) {
-  return;
-  const credit_api_endpoint = 'http://localhost:9072/api/v1/Transactions/maketransaction/1';
-
-  for (let i = 0; i < failedBids.length; i++) {
-    axios.post(credit_api_endpoint, {
-      StudentID: '0', // "ADMINID"
-      ToStudentID: failedBids[i].StudentID,
-      TokenTypeID: 1,
-      TransactionType: 'Failed Bid Refund',
-      Amount: failedBids[i].TokenAmount,
-    }).catch((error) => {
-      logger.error(`Failed to refund bid. ${error}`);
-    });
-  }
-}
 
 allocateClasses();
