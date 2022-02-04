@@ -3,14 +3,13 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
-var pool  = mysql.createPool({
-  connectionLimit : 10,
-  host            : process.env.DB_HOST,
-  user            : 'edufi',
-  password        : 'password',
-  database        : 'edufi'
+const pool = mysql.createPool({
+  connectionLimit: 10,
+  host: process.env.DB_HOST,
+  user: 'edufi',
+  password: 'password',
+  database: 'edufi',
 });
-
 
 router.get('/timetable', (req, res) => {
   // get authentication detail from cookie
@@ -28,7 +27,7 @@ router.get('/api/v1/timetable/student/:studentID', (req, res) => {
       values: [studentID, prevMonday],
     },
     (error, results) => {
-      if (error){
+      if (error) {
         // pass error to expressjs error handler
         next(error);
       }
@@ -64,9 +63,9 @@ router.get(
         values: [moduleCode, prevMonday],
       },
       (error, results) => {
-        if (error){
+        if (error) {
           next(error);
-        };
+        }
         res.send(results);
       },
     );
@@ -82,7 +81,7 @@ router.get('/api/v1/allocations/class/:class_id', (req, res) => {
       values: [classID, prevMonday],
     },
     (error, results) => {
-      if (error){
+      if (error) {
         // pass error to expressjs error handler
         next(error);
       }
