@@ -8,6 +8,11 @@ services:
     container_name: "timetable-api"
     environment:
       DB_HOST: timetable_db
+      CLASS_API: http://localhost:9101/api/v1/
+      BID_API: http://localhost:9221/api/v1/
+      TRANSACTION_API: http://localhost:9072/api/v1/
+      IS_PRODUCTION: true
+
   scheduler:
     image: mcuadros/ofelia:latest
     volumes:

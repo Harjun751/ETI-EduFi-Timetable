@@ -12,7 +12,7 @@ const pool = mysql.createPool({
   database: 'edufi',
 });
 
-const classAPIGet = 'http://localhost:9101/api/v1/class?key=2c78afaf-97da-4816-bbee-9ad239abb296';
+const classAPIGet = process.env.CLASS_API + 'class?key=2c78afaf-97da-4816-bbee-9ad239abb296';
 
 router.get('/timetable', (req, res) => {
   // get authentication detail from cookie
@@ -64,9 +64,10 @@ router.get('/api/v1/timetable/tutor/:tutorID', (req, res, next) => {
   const { tutorID } = req.params;
   axios.get(classAPIGet).then((response) => {
     let classList = response.data;
-    classList = classList.filter((x) => x.tutorid === tutorID);
+    classList = classList.filter((x) => x.tutorid == tutorID);
+    const uniqueModuleCodes = [...new Set(classList.map((x) => x.moduleid))];
     const html = createTable(classList);
-    res.render('timetable', { html });
+    res.render('timetable', { html,uniqueModuleCodes });
   }).catch((error) => {
     next(error);
   });
