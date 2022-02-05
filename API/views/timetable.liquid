@@ -39,35 +39,37 @@
     }
 </style>
 
-<body>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:8.333%; top:3.5rem;"></div>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:25%; top:3.5rem;"></div>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:41.666%; top:3.5rem;"></div>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:58.333%; top:3.5rem;"></div>
-    <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:75%; top:3.5rem;"></div>
-    <div class="c_transition w-9/12 h-14 absolute -z-10 top-14" style="left:8.33%;background:var(--bg-color-1);"></div>
-    <div class="c_transition w-9/12 h-14 absolute -z-10 top-28" style="left:8.33%;background:var(--bg-color-2);"></div>
-    <div class="c_transition w-9/12 h-14 absolute -z-10" style="left:8.33%;background:var(--bg-color-3);top:10.5rem;"></div>
-    <div class="c_transition w-9/12 h-14 absolute -z-10" style="left:8.33%;background:var(--bg-color-4);top:14rem;"></div>
-    <div class="c_transition w-9/12 h-14 absolute -z-10" style="left:8.33%;background:var(--bg-color-5);top:17.5rem;"></div>
-    <div class="w-10/12 grid gap-0 grid-cols-10 grid-rows-6">
-        <span ></span>
-        <div style="left:7.333%" class="h-14 pt-3 absolute text-center text-lg col-start-2"><p>0900</p><p class="text-xs -mt-2">9am</p></div>
-        <div style="left:15.666%" class="h-14 pt-3 absolute text-center text-lg col-start-3"><p>1000</p><p class="text-xs -mt-2">10am</p></div>
-        <div style="left:24%" class="h-14 pt-3 absolute text-center text-lg"><p>1100</p><p class="text-xs -mt-2">11am</p></div>
-        <div style="left:32.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1200</p><p class="text-xs -mt-2">12pm</p></div>
-        <div style="left:40.666%" class="h-14 pt-3 absolute text-center text-lg"><p>1300</p><p class="text-xs -mt-2">1pm</p></div>
-        <div style="left:49%" class="h-14 pt-3 absolute text-center text-lg"><p>1400</p><p class="text-xs -mt-2">2pm</p></div>
-        <div style="left:57.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1500</p><p class="text-xs -mt-2">3pm</p></div>
-        <div style="left:65.666%" class="h-14 pt-3 absolute text-center text-lg"><p>1600</p><p class="text-xs -mt-2">4pm</p></div>
-        <div style="left:74%" class="h-14 pt-3 absolute text-center text-lg"><p>1700</p><p class="text-xs -mt-2">5pm</p></div>
-        <div style="left:82.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1800</p><p class="text-xs -mt-2">6pm</p></div>
-        <div class="text-right pr-4 h-14 text-left row-start-2">Monday</div>
-        <div class="text-right pr-4 h-14 text-left row-start-3">Tuesday</div>
-        <div class="text-right pr-4 h-14 text-left row-start-4">Wednesday</div>
-        <div class="text-right pr-4 h-14 text-left row-start-5">Thursday</div>
-        <div class="text-right pr-4 h-14 text-left row-start-6">Friday</div>
-        {{ html }} 
+<body style="overflow:hidden;">
+    <div class="relative left-20 top-20">
+        <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:8.333%; top:3.5rem;"></div>
+        <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:25%; top:3.5rem;"></div>
+        <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:41.666%; top:3.5rem;"></div>
+        <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:58.333%; top:3.5rem;"></div>
+        <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:75%; top:3.5rem;"></div>
+        <div class="c_transition w-9/12 h-14 absolute -z-10 top-14" style="left:8.33%;background:var(--bg-color-1);"></div>
+        <div class="c_transition w-9/12 h-14 absolute -z-10 top-28" style="left:8.33%;background:var(--bg-color-2);"></div>
+        <div class="c_transition w-9/12 h-14 absolute -z-10" style="left:8.33%;background:var(--bg-color-3);top:10.5rem;"></div>
+        <div class="c_transition w-9/12 h-14 absolute -z-10" style="left:8.33%;background:var(--bg-color-4);top:14rem;"></div>
+        <div class="c_transition w-9/12 h-14 absolute -z-10" style="left:8.33%;background:var(--bg-color-5);top:17.5rem;"></div>
+        <div class="w-10/12 grid gap-0 grid-cols-10 grid-rows-6">
+            <span ></span>
+            <div style="left:7.333%" class="h-14 pt-3 absolute text-center text-lg col-start-2"><p>0900</p><p class="text-xs -mt-2">9am</p></div>
+            <div style="left:15.666%" class="h-14 pt-3 absolute text-center text-lg col-start-3"><p>1000</p><p class="text-xs -mt-2">10am</p></div>
+            <div style="left:24%" class="h-14 pt-3 absolute text-center text-lg"><p>1100</p><p class="text-xs -mt-2">11am</p></div>
+            <div style="left:32.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1200</p><p class="text-xs -mt-2">12pm</p></div>
+            <div style="left:40.666%" class="h-14 pt-3 absolute text-center text-lg"><p>1300</p><p class="text-xs -mt-2">1pm</p></div>
+            <div style="left:49%" class="h-14 pt-3 absolute text-center text-lg"><p>1400</p><p class="text-xs -mt-2">2pm</p></div>
+            <div style="left:57.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1500</p><p class="text-xs -mt-2">3pm</p></div>
+            <div style="left:65.666%" class="h-14 pt-3 absolute text-center text-lg"><p>1600</p><p class="text-xs -mt-2">4pm</p></div>
+            <div style="left:74%" class="h-14 pt-3 absolute text-center text-lg"><p>1700</p><p class="text-xs -mt-2">5pm</p></div>
+            <div style="left:82.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1800</p><p class="text-xs -mt-2">6pm</p></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-2"><span>Monday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-3"><span>Tuesday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-4"><span>Wednesday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-5"><span>Thursday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-6"><span>Friday</span></div>
+            {{ html }} 
+        </div>
     </div>
     <p>Theme:</p><select id="theme_id" onchange="changeStyles()">
         <option value="0">Default</option>
