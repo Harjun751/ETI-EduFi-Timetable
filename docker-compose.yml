@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   timetable-api:
-    image: arjunsingh751/eti-edufi-timetable:version0.51
+    image: arjunsingh751/eti-edufi-timetable:latest
     ports:
       - 9051:3000
     container_name: "timetable-api"
@@ -11,7 +11,7 @@ services:
       CLASS_API: http://10.31.11.12:9101/api/v1/
       BID_API: http://10.31.11.12:9221/api/v1/
       TRANSACTION_API: http://10.31.11.12:9072/api/v1/
-      IS_PRODUCTION: true
+      IS_PRODUCTION: "true"
 
   scheduler:
     image: mcuadros/ofelia:latest
