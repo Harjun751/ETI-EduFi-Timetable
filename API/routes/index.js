@@ -63,7 +63,7 @@ router.get('/api/v1/timetable/student/:studentID', (req, res, next) => {
     res.render('timetable', { html, uniqueModuleCodes });
   });
   // res.render('timetable', {html:"<h1>Unable to load data...</h1>"});
-  res.render('timetable', {html:`<div class="h-14 pt-2 text-center text-lg col-start-2 col-end-4 row-start-3"><div class="h-10 c_transition pt-1 Your-Mother mx-5 text-center border-solid border-black border-2 rounded-xl">Your Mother</div></div>`, uniqueModuleCodes:`Your-Mother`});
+  res.render('timetable', { html: '<div class="h-14 pt-2 text-center text-lg col-start-2 col-end-4 row-start-3"><div class="h-10 c_transition pt-1 Your-Mother mx-5 text-center border-solid border-black border-2 rounded-xl">Your Mother</div></div>', uniqueModuleCodes: 'Your-Mother' });
 });
 
 router.get('/api/v1/timetable/tutor/:tutorID', (req, res, next) => {
