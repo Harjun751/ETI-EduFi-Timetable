@@ -1,11 +1,13 @@
-if (!process.env.IS_PRODUCTION){
-  console.log("local env")
-  require('dotenv').config()
+if (!process.env.IS_PRODUCTION) {
+  console.log('local env');
+  require('dotenv').config();
 }
 const mysql = require('mysql');
 const axios = require('axios');
 
-const { createLogger, format, transports, exitOnError } = require('winston');
+const {
+  createLogger, format, transports, exitOnError,
+} = require('winston');
 const { Console } = require('winston/lib/winston/transports');
 const { connect } = require('./routes');
 
@@ -46,12 +48,12 @@ async function allocateClasses() {
 
   // GET request to bid API
   let bidList;
-  await axios.get(bidAPIEndpoint + `bids?semesterStartDate=${semesterStartDate}&status=Pending&` + apiKey)
-  .then((response) => {
-    bidList = response.data;
-  }).catch((error) => {
-    logger.error(`Failed to get bid list. ${error}`);
-  });
+  await axios.get(`${bidAPIEndpoint}bids?semesterStartDate=${semesterStartDate}&status=Pending&${apiKey}`)
+    .then((response) => {
+      bidList = response.data;
+    }).catch((error) => {
+      logger.error(`Failed to get bid list. ${error}`);
+    });
 
   // bidList = [
   //   {
@@ -76,7 +78,7 @@ async function allocateClasses() {
 
   // ----- STEP 2: GET Class Details ----- //
   let classList;
-  await axios.get(process.env.CLASS_API+'class?key=2c78afaf-97da-4816-bbee-9ad239abb296').then((response) => {
+  await axios.get(`${process.env.CLASS_API}class?key=2c78afaf-97da-4816-bbee-9ad239abb296`).then((response) => {
     classList = response.data;
   }).catch((error) => {
     logger.error(`Failed to get class list. ${error}`);
@@ -141,10 +143,10 @@ async function allocateClasses() {
     // ---------- STEP 5: Update Bid List ---------- //
 
     for (let i = 0; i < bidList.length; i += 1) {
-      const url = process.env.BID_API + `bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`;
+      const url = `${process.env.BID_API}bids/${bidList[i].BidID}?key=2c78afaf-97da-4816-bbee-9ad239abb298`;
       axios.put(url, bidList[i])
         .then((response) => {
-          console.log("updated!");
+          console.log('updated!');
         }).catch((error) => {
           logger.error(`Failed to update bid list. ${error}`);
         });
@@ -153,7 +155,7 @@ async function allocateClasses() {
     // ---------- STEP 6: Refund Failed Bids ---------- //
     const failedBids = bidList.filter((x) => x.Status === 'Failed');
     for (let i = 0; i < failedBids.length; i++) {
-      axios.post(process.env.TRANSACTION_API+"Transactions/maketransaction/1", {
+      axios.post(`${process.env.TRANSACTION_API}Transactions/maketransaction/1`, {
         StudentID: '0', // "ADMINID"
         ToStudentID: failedBids[i].StudentID,
         TokenTypeID: 1,

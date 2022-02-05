@@ -12,7 +12,7 @@ const pool = mysql.createPool({
   database: 'edufi',
 });
 
-const classAPIGet = process.env.CLASS_API + 'class?key=2c78afaf-97da-4816-bbee-9ad239abb296';
+const classAPIGet = `${process.env.CLASS_API}class?key=2c78afaf-97da-4816-bbee-9ad239abb296`;
 
 router.get('/timetable', (req, res) => {
   // get authentication detail from cookie
@@ -67,7 +67,7 @@ router.get('/api/v1/timetable/tutor/:tutorID', (req, res, next) => {
     classList = classList.filter((x) => x.tutorid == tutorID);
     const uniqueModuleCodes = [...new Set(classList.map((x) => x.moduleid))];
     const html = createTable(classList);
-    res.render('timetable', { html,uniqueModuleCodes });
+    res.render('timetable', { html, uniqueModuleCodes });
   }).catch((error) => {
     next(error);
   });
