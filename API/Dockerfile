@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 ## Build application
 
-FROM node:12.18.1 AS build
+FROM node:14.0 AS build
 WORKDIR /app
 
 # Add package json to  workdir
