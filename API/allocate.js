@@ -55,27 +55,6 @@ async function allocateClasses() {
       logger.error(`Failed to get bid list. ${error}`);
     });
 
-  // bidList = [
-  //   {
-  //     BidID: 1, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 1, StudentName: 'Dingus', TokenAmount: 1, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 5, SemesterStartDate: '29/1/2022', ClassID: 2, StudentID: 5, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 7, SemesterStartDate: '29/1/2022', ClassID: 2, StudentID: 3, StudentName: 'Bingus', TokenAmount: 128, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 2, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 2, StudentName: 'Wingus', TokenAmount: 130, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 3, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 3, StudentName: 'Fingus', TokenAmount: 130, Status: 'Pending',
-  //   },
-  //   {
-  //     BidID: 12, SemesterStartDate: '29/1/2022', ClassID: 1, StudentID: 12, StudentName: 'Lingus', TokenAmount: 130, Status: 'Pending',
-  //   },
-  // ];
-
   // ----- STEP 2: GET Class Details ----- //
   let classList;
   await axios.get(`${process.env.CLASS_API}class?key=2c78afaf-97da-4816-bbee-9ad239abb296`).then((response) => {
@@ -165,7 +144,7 @@ async function allocateClasses() {
         logger.error(`Failed to refund bid. ${error}`);
       });
     }
-
+    logger.log({ level: 'info', message: 'Classes successfully allocated' });
     // End connection
     con.end();
   });
