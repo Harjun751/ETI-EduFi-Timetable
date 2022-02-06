@@ -11,6 +11,7 @@ services:
       CLASS_API: http://10.31.11.12:9101/api/v1/
       BID_API: http://10.31.11.12:9221/api/v1/
       TRANSACTION_API: http://10.31.11.12:9072/api/v1/
+      STUDENT_API: http://10.31.11.12:9072/api/v1/
       IS_PRODUCTION: "true"
 
   scheduler:

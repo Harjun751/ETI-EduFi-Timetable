@@ -476,6 +476,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   position: relative;
 }
 
+.left-20 {
+  left: 5rem;
+}
+
+.top-20 {
+  top: 5rem;
+}
+
 .top-14 {
   top: 3.5rem;
 }
@@ -484,44 +492,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   top: 7rem;
 }
 
-.left-2\.5 {
-  left: 0.625rem;
-}
-
-.left-2 {
-  left: 0.5rem;
-}
-
-.left-4 {
-  left: 1rem;
-}
-
-.left-5 {
-  left: 1.25rem;
-}
-
-.left-7 {
-  left: 1.75rem;
-}
-
-.left-14 {
-  left: 3.5rem;
-}
-
-.left-28 {
-  left: 7rem;
-}
-
-.left-20 {
-  left: 5rem;
-}
-
-.top-36 {
-  top: 9rem;
-}
-
-.top-20 {
-  top: 5rem;
+.top-10 {
+  top: 2.5rem;
 }
 
 .-z-10 {
@@ -696,6 +668,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   grid-row-start: 6;
 }
 
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
+}
+
 .mx-5 {
   margin-left: 1.25rem;
   margin-right: 1.25rem;
@@ -705,12 +685,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-top: -0.5rem;
 }
 
-.ml-auto {
-  margin-left: auto;
-}
-
-.mr-auto {
-  margin-right: auto;
+.inline {
+  display: inline;
 }
 
 .flex {
@@ -729,8 +705,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 2.5rem;
 }
 
-.h-28 {
-  height: 7rem;
+.h-6 {
+  height: 1.5rem;
+}
+
+.h-12 {
+  height: 3rem;
 }
 
 .w-1\/12 {
@@ -745,6 +725,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 83.333333%;
 }
 
+.w-full {
+  width: 100%;
+}
+
 .grid-cols-10 {
   grid-template-columns: repeat(10, minmax(0, 1fr));
 }
@@ -753,16 +737,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   grid-template-rows: repeat(6, minmax(0, 1fr));
 }
 
-.items-center {
-  align-items: center;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
 .gap-0 {
   gap: 0px;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rounded-xl {
@@ -792,6 +774,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
+.bg-violet-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(196 181 253 / var(--tw-bg-opacity));
+}
+
 .pt-1 {
   padding-top: 0.25rem;
 }
@@ -804,20 +791,20 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-top: 0.75rem;
 }
 
-.pr-4 {
-  padding-right: 1rem;
-}
-
-.pt-2\.5 {
-  padding-top: 0.625rem;
-}
-
 .pt-4 {
   padding-top: 1rem;
 }
 
-.text-left {
-  text-align: left;
+.pr-4 {
+  padding-right: 1rem;
+}
+
+.pr-2 {
+  padding-right: 0.5rem;
+}
+
+.pl-2 {
+  padding-left: 0.5rem;
 }
 
 .text-center {

@@ -37,10 +37,19 @@
         -ms-transition: background-color 100ms linear;
         transition: background-color 100ms linear;
     }
+    .truncate{
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
 </style>
 
 <body style="overflow:hidden;">
-    <div class="relative left-20 top-20">
+    <nav class="w-full bg-violet-300 h-12 pt-2 pl-2">
+        <div class="float-left">EduFi™</div>
+        <div class="text-center" style="margin: 0 auto;">Timetable</div>
+    </nav>
+    <div class="relative left-20 top-10">
         <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:8.333%; top:3.5rem;"></div>
         <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:25%; top:3.5rem;"></div>
         <div class="bg-gray-100 w-1/12 absolute -z-10" style="height:17.5rem;left:41.666%; top:3.5rem;"></div>
@@ -63,11 +72,11 @@
             <div style="left:65.666%" class="h-14 pt-3 absolute text-center text-lg"><p>1600</p><p class="text-xs -mt-2">4pm</p></div>
             <div style="left:74%" class="h-14 pt-3 absolute text-center text-lg"><p>1700</p><p class="text-xs -mt-2">5pm</p></div>
             <div style="left:82.333%" class="h-14 pt-3 absolute text-center text-lg"><p>1800</p><p class="text-xs -mt-2">6pm</p></div>
-            <div class="text-right pt-4 pr-4 h-14 row-start-2"><span>Monday</span></div>
-            <div class="text-right pt-4 pr-4 h-14 row-start-3"><span>Tuesday</span></div>
-            <div class="text-right pt-4 pr-4 h-14 row-start-4"><span>Wednesday</span></div>
-            <div class="text-right pt-4 pr-4 h-14 row-start-5"><span>Thursday</span></div>
-            <div class="text-right pt-4 pr-4 h-14 row-start-6"><span>Friday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-2" style="direction:rtl"><span>Monday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-3" style="direction:rtl"><span>Tuesday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-4" style="direction:rtl"><span>Wednesday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-5" style="direction:rtl"><span>Thursday</span></div>
+            <div class="text-right pt-4 pr-4 h-14 row-start-6" style="direction:rtl"><span>Friday</span></div>
             {{ html }} 
         </div>
     </div>
