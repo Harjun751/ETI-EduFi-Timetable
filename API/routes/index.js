@@ -63,8 +63,8 @@ router.get('/api/v1/timetable/student/:studentID', (req, res, next) => {
     res.render('timetable', { html, uniqueModuleCodes });
   });
   // res.render('timetable', {html:"<h1>Unable to load data...</h1>"});
-  var errorHTML = getErrorHTML();
-  res.render('timetable', { html: errorHTML, uniqueModuleCodes: ['error-0','error-1','error-2','error-3','error-4',] });
+  const errorHTML = getErrorHTML();
+  res.render('timetable', { html: errorHTML, uniqueModuleCodes: ['error-0', 'error-1', 'error-2', 'error-3', 'error-4'] });
 });
 
 router.get('/api/v1/timetable/tutor/:tutorID', (req, res, next) => {
@@ -202,14 +202,14 @@ function getPreviousMonday() {
   return `${prevMonday.getDate()}-${prevMonday.getMonth() + 1}-${prevMonday.getFullYear()}`;
 }
 
-function getErrorHTML(){
-  let errorHTML = ""
-  for (let i = 0; i < 5 ; i++){
+function getErrorHTML() {
+  let errorHTML = '';
+  for (let i = 0; i < 5; i++) {
     // Get value from 2-11
-    var beginning = Math.floor(Math.random() * 8) + 2;
+    const beginning = Math.floor(Math.random() * 8) + 2;
     // Get value from beginning-11
-     var end = Math.floor(Math.random() * (11-beginning)) + beginning;
-    errorHTML+=`<div class="h-14 pt-2 text-center text-lg col-start-${beginning} col-end-${end} row-start-${2+i}"><div class="h-10 c_transition pt-1 error-${i} mx-5 text-center truncate border-solid border-black border-2 rounded-xl">error</div></div>`
+    const end = Math.floor(Math.random() * (11 - beginning)) + beginning;
+    errorHTML += `<div class="h-14 pt-2 text-center text-lg col-start-${beginning} col-end-${end} row-start-${2 + i}"><div class="h-10 c_transition pt-1 error-${i} mx-5 text-center truncate border-solid border-black border-2 rounded-xl">error</div></div>`;
   }
   return errorHTML;
 }

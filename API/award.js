@@ -28,7 +28,7 @@ async function award_tokens() {
   });
 
   for (let i = 0; i < student_data.length; i++) {
-    axios.post((process.env.TRANSACTION_API+"Transactions/maketransaction/2"), {
+    axios.post((`${process.env.TRANSACTION_API}Transactions/maketransaction/2`), {
       StudentID: '0', // "ADMINID"
       ToStudentID: student_data[i].StudentID,
       TokenTypeID: 1,
