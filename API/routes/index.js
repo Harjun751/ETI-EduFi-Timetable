@@ -97,12 +97,11 @@ router.get(
       failed = true;
     });
 
-    if (failed===true){
+    if (failed === true) {
       return;
     }
-    else{
-      failed=false;
-    }
+
+    failed = false;
 
     pool.query(
       {
@@ -113,16 +112,13 @@ router.get(
         if (error) {
           // pass error to expressjs error handler
           next(error);
-        }
-        else{
+        } else {
           res.send(results);
         }
       },
     );
   },
 );
-
-
 
 router.get('/api/v1/allocations/class/:class_id', (req, res, next) => {
   const classID = req.params.class_id;
