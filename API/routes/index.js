@@ -87,13 +87,22 @@ router.get(
     const prevMonday = getPreviousMonday();
 
     let classID;
+    let failed = false;
     await axios.get(classAPIGet).then((response) => {
       const classList = response.data;
       const class_ = classList.find((x) => x.moduleid === moduleCode);
       classID = class_.classid;
     }).catch((error) => {
       next(error);
+      failed = true;
     });
+
+    if (failed===true){
+      return;
+    }
+    else{
+      failed=false;
+    }
 
     pool.query(
       {
@@ -105,11 +114,15 @@ router.get(
           // pass error to expressjs error handler
           next(error);
         }
-        res.send(results);
+        else{
+          res.send(results);
+        }
       },
     );
   },
 );
+
+
 
 router.get('/api/v1/allocations/class/:class_id', (req, res, next) => {
   const classID = req.params.class_id;
