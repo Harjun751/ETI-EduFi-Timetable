@@ -9,6 +9,7 @@ const router = express.Router();
 const mysql = require('mysql');
 
 const { createLogger, format, transports } = require('winston');
+
 const {
   combine, json,
 } = format;
@@ -64,9 +65,7 @@ router.get('/api/v1/timetable/student/:studentID', (req, res, next) => {
 
   const getPromise = axios.get(classAPIGet).then((response) => {
     allClasses = response.data;
-  }).catch((error) => {
-    return error
-  });
+  }).catch((error) => error);
 
   // Wait for GET to Class MS and query to DB before next part
   Promise.all([queryPromise, getPromise]).then(() => {
@@ -75,11 +74,11 @@ router.get('/api/v1/timetable/student/:studentID', (req, res, next) => {
     const html = createTable(allClasses);
     const uniqueModuleCodes = [...new Set(allClasses.map((x) => x.moduleid))];
     res.render('timetable', { html, uniqueModuleCodes });
-  }).catch((err)=>{
-    logger.error(err)
+  }).catch((err) => {
+    logger.error(err);
     const errorHTML = getErrorHTML();
     res.render('timetable', { html: errorHTML, uniqueModuleCodes: ['error-0', 'error-1', 'error-2', 'error-3', 'error-4'] });
-  })
+  });
 });
 
 router.get('/api/v1/timetable/tutor/:tutorID', (req, res, next) => {
@@ -93,7 +92,7 @@ router.get('/api/v1/timetable/tutor/:tutorID', (req, res, next) => {
   }).catch((error) => {
     const errorHTML = getErrorHTML();
     res.render('timetable', { html: errorHTML, uniqueModuleCodes: ['error-0', 'error-1', 'error-2', 'error-3', 'error-4'] });
-    logger.error(error)
+    logger.error(error);
   });
 });
 
