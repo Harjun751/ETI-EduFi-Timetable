@@ -13,6 +13,11 @@ This module exposes some endpoints to obtain data from. They are shown below.
 
 The API Documentation [is also viewable here](https://documenter.getpostman.com/view/19284028/UVXqFYo2)
 
+## Design Considerations
+One of the more important parts of the module was to use a scheduler to schedule the allocation of modules. A frontend part was also required. A single microservice was used for this section, as expressJS is capable of serving both the frontend and API on one server. Allocation and award scripts were also hosted and scheduled on the same microservice.
+
+[Ofelia](https://github.com/mcuadros/ofelia) was used as the scheduler instead of the ubiquitous cron, because the docker node image would require installing cron and setting it up manually. Ofelia provided a docker-native method of scheduling, and was easy to set up.
+
 ## Architecture Diagram
 
 The architecture diagram is shown below:
@@ -26,6 +31,11 @@ Instances in which inter-microservice communication is required is shown below.
 The first instance is the allocation of bids.
 ![Allocation Flow](Images/allocationFlow.png)
 
+## Setting it up
+
+1. Download the config.ini, create_tables.sql, and docker-compose.yml files
+2. Run docker-compose up -d
+3. Service runs on port 9051
 
 ## How does it work?
 This section will go through the planned steps in which the microservice accomplshes it's tasks. It's mostly for my own reference.
