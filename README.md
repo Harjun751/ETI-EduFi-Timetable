@@ -32,6 +32,7 @@ The first instance is the allocation of bids.
 ![Allocation Flow](Images/allocationFlow.png)
 
 ## Setting it up
+Link to dockerhub for submission: https://hub.docker.com/repository/docker/arjunsingh751/eti-edufi-timetable
 
 1. Download the config.ini, create_tables.sql, and docker-compose.yml files
 2. Run docker-compose up -d
