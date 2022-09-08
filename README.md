@@ -1,4 +1,5 @@
 # ETI-EduFi-Timetable
+![Edufi-Timetable](Images/edufi-timetable.gif)
 EduFi-Timetable is a microservice that implements part of the 'EduFi' application created for theEmerging Trends in IT module assignment 2. It uses ExpressJS as the backend, with the template engine "LiquidJS". The frontend is a simple html page along with tailwindcss for styling.
 
 ## API Specification
